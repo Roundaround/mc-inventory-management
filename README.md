@@ -1,6 +1,6 @@
 ![Inventory Management](https://i.imgur.com/wXZra91.png)
 
-![](https://img.shields.io/badge/Loader-Fabric-313e51?style=for-the-badge)
+![](https://img.shields.io/badge/Loader-Fabric%20|%20Forge%20|%20NeoForge-313e51?style=for-the-badge)
 ![](https://img.shields.io/badge/MC-26.1--26.1.2%20|%201.21%20|%201.20%20|%201.19%20|%201.18.2-313e51?style=for-the-badge)
 ![](https://img.shields.io/badge/Side-Client%20+%20Server-313e51?style=for-the-badge)
 

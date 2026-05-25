@@ -1,0 +1,9 @@
+[versions]
+trove = "1.0.0+26.1"
+
+[libraries]
+trove-bom = { module = "me.roundaround:trove-bom", version.ref = "trove" }
+trove-fabric-core = { module = "me.roundaround:trove-fabric-core" }
+trove-neoforge-core = { module = "me.roundaround:trove-neoforge-core" }
+trove-forge-core = { module = "me.roundaround:trove-forge-core" }
+trove-config-gui = { module = "me.roundaround:trove-config-gui" }
