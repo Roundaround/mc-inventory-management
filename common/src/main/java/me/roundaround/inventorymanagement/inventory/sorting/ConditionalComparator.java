@@ -4,23 +4,23 @@ import java.util.Comparator;
 import java.util.function.Predicate;
 
 public class ConditionalComparator<T> implements Comparator<T> {
-  private final Predicate<? super T> condition;
-  private final Comparator<T> baseComparator;
+  private final Predicate<T> predicate;
+  private final Comparator<T> delegate;
 
-  private ConditionalComparator(Predicate<? super T> condition, Comparator<T> baseComparator) {
-    this.condition = condition;
-    this.baseComparator = baseComparator;
+  protected ConditionalComparator(Predicate<T> predicate, Comparator<T> delegate) {
+    this.predicate = predicate;
+    this.delegate = delegate;
   }
 
   @Override
   public int compare(T o1, T o2) {
-    if (!this.condition.test(o1) || !this.condition.test(o2)) {
+    if (!this.predicate.test(o1) || !this.predicate.test(o2)) {
       return 0;
     }
-    return this.baseComparator.compare(o1, o2);
+    return this.delegate.compare(o1, o2);
   }
 
-  public static <T> ConditionalComparator<T> comparing(Predicate<T> condition, Comparator<T> baseComparator) {
-    return new ConditionalComparator<>(condition, baseComparator);
+  public static <T> ConditionalComparator<T> of(Predicate<T> predicate, Comparator<T> base) {
+    return new ConditionalComparator<>(predicate, base);
   }
 }

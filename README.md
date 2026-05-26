@@ -18,23 +18,39 @@ Sort and transfer items with the click of a button. Adds several buttons to your
 
 ### Configuration
 
-_* Configuration capabilities added in 1.1.0 for 1.19. The version for 1.18.2 does not allow configuration. Sorry!_
+You can configure the behavior of the mod from the `inventorymanagement.toml` file within your config folder. If you have ModMenu installed, you can also access the configuration through the UI in ModMenu's mod list — each option shows a description tooltip when you hover it.
 
-You can configure the behavior of the mod from the `inventorymanagement.toml` file within your config folder. If you have ModMenu installed, you can also access the configuration through the UI in ModMenu's mod list!
+**General**
 
-`modEnabled`: `true|false` - Simple toggle for the mod! Set to `false` to disable.
+`modEnabled`: `true|false` (default `true`) - Master switch for the mod. When off, no buttons are shown and no behavior runs.
 
-`showSort`: `true|false` - Whether or not to show sort buttons in the UI.
+`showSort`: `true|false` (default `true`) - Whether to show the sort buttons.
 
-`showTransfer`: `true|false` - Whether or not to show transfer buttons in the UI.
+`showTransfer`: `true|false` (default `true`) - Whether to show the transfer-all (place/take) buttons.
 
-`showStack`: `true|false` - Whether or not to show autostack buttons in the UI.
+`showStack`: `true|false` (default `true`) - Whether to show the auto-stack buttons.
 
-`guiTheme`: `"light"|"dark"|"auto"` - Whether the buttons should use light theme (vanilla), dark theme (VanillaTweaks dark UI), or automatically choose based on whether you have VanillaTweaks dark UI enabled.
+**Sorting**
+
+`sortMode`: `"alphabetical"|"creative"` (default `"alphabetical"`) - How items are ordered when sorting. `alphabetical` sorts by item name; `creative` uses the creative-menu ordering.
+
+`containersFirst`: `true|false` (default `false`) - Place content-holding items (shulker boxes, bundles, etc.) before other items. Only applies in `alphabetical` mode.
+
+`itemGrouping`: `true|false` (default `true`) - Master toggle for variant grouping: cluster related families of items (all wool colors, all planks, …) together instead of sorting each variant purely by name. See [Item grouping](#item-grouping) below.
+
+**Button position**
 
 `defaultPosition`: `"(<Integer>,<Integer>)"` - Customize a default for button position.
 
 `screenPositions`: `{"ID": "(<Integer>,<Integer>)"}` - Customize button position on a per-screen basis. While this can be modified manually in the config file, the recommended way to modify this is through the configuration UI. See below!
+
+**Item grouping** (under the `grouping` section)
+
+`grouping.<family>`: `true|false` (default `true`) - One toggle per built-in variant family; turn one off to sort that family by plain name instead of clustering it. Families: `wool`, `wool_carpets`, `beds`, `candles`, `banners`, `shulker_boxes`, `dyes`, `terracotta`, `glazed_terracotta`, `concrete`, `concrete_powder`, `stained_glass`, `stained_glass_pane`, `planks`, `wooden_slabs`, `wooden_stairs`, `wooden_doors`, `wooden_trapdoors`, `wooden_fences`, `fence_gates`, `signs`, `hanging_signs`, `leaves`, `saplings`, `boats`, `spawn_eggs`, `pottery_sherds`, `horse_armor`, `coral`.
+
+`grouping.dynamicGroups`: `true|false` (default `true`) - Master switch for datapack-defined grouping families (see [datapack group tags](#datapack-group-tags-no-code)).
+
+`grouping.disabledDynamicGroups`: `["<tag id>", …]` (default empty) - Individually disabled datapack grouping families, by full tag id. Managed in the config file (no GUI control).
 
 ### Modifying the button positions
 
@@ -75,3 +91,139 @@ Similar to the transfer all buttons, there will also be buttons for stacking int
 ### After
 
 ![](https://i.imgur.com/yXyvZO6.png)
+
+---
+
+## Item grouping
+
+When `itemGrouping` is on (it is by default), the **alphabetical** sort clusters families of related
+items together instead of scattering each variant by its own name — so all 16 wool colors land
+together, all plank types land together, and so on. Each built-in family has its own
+`grouping.<id>` toggle (all default on); turn one off to fall back to plain name sorting for just
+that family.
+
+A family "lands" in the sorted result at the display-name slot of its **anchor** (for the color
+families that's the white variant, e.g. the whole wool cluster sorts where *White Wool* would).
+Built-in families are listed under the [Configuration](#configuration) section above.
+
+Groups are consulted **first-match-wins** in this order: **built-ins → mod-registered groups →
+datapack groups**. Built-ins are always consulted first, so nothing a mod or datapack adds can
+hijack a vanilla family.
+
+---
+
+## For mod & pack developers
+
+Inventory Management exposes a small, **loader-agnostic** API (package
+`me.roundaround.inventorymanagement.api.sorting` — no Fabric/NeoForge/Forge types, so one call works
+on all three loaders) plus a datapack convention for contributing your own item **variant groups**
+to the sort. A variant group clusters related items so they sort as a block.
+
+### Group registry (for mods)
+
+Call `ItemVariantRegistry.registerModGroup(VariantGroup)` from your mod's init entrypoint. Build the
+group with the `VariantGroup` factories:
+
+| Factory | Use when |
+|---|---|
+| `VariantGroup.by(tag)` | members are an item tag; anchor is the tag's language key |
+| `VariantGroup.by(rootItem, tag)` | members are an item tag; anchor is a representative item |
+| `VariantGroup.by(anchorKey, tag)` | members are an item tag; anchor is an explicit translation key |
+| `VariantGroup.byPredicate(pred, anchorDescId, enabled)` | members match a predicate; anchor is a description id |
+
+```java
+import me.roundaround.inventorymanagement.api.sorting.ItemVariantRegistry;
+import me.roundaround.inventorymanagement.api.sorting.VariantGroup;
+
+// Group all your gem items together, landing them at Ruby's display-name slot.
+ItemVariantRegistry.registerModGroup(
+    VariantGroup.byPredicate(
+        stack -> stack.is(MyItems.RUBY) || stack.is(MyItems.SAPPHIRE),
+        MyItems.RUBY.getDescriptionId(),
+        () -> true));
+
+// Or, for an item tag anchored on a representative item:
+ItemVariantRegistry.registerModGroup(VariantGroup.by(MyItems.RED_CRYSTAL, MyTags.CRYSTALS));
+```
+
+- **Anchor** — the first sort key a group produces; the whole cluster lands at that item/key's
+  alphabetical slot, with members ordered within it.
+- **Ordering** — mod groups are consulted *after* every built-in (so they can never shadow a vanilla
+  family) and *before* datapack groups. Among mods, registration order breaks an overlap, so register
+  a narrow predicate (or a disjoint tag) to avoid fighting another mod for the same items.
+- **Timing** — register from your mod-init entrypoint, *before* the first inventory sort.
+- **Enablement** — mod groups are always-on by default. To give users a toggle, back the `enabled`
+  `BooleanSupplier` with your own mod's config and pass it into the factory; Inventory Management does
+  **not** create a config option or GUI section for mod-registered groups.
+- **Don't** create your own registry via `ItemVariantRegistry.register(Identifier)` expecting the sort
+  to read it — only `registerModGroup(...)` is consulted.
+
+### Comparator registry (for mods)
+
+Contribute a raw `Comparator<ItemStack>` ordering to the sort. This is **distinct from the group
+registry**: a group *clusters* related items; a comparator contribution *refines the order* among
+items the sort already considers equal.
+
+> **This is a tie-break.** The comparator registry is consulted only **after** the user's primary
+> order (alphabetical/creative) and every built-in metadata comparator have all tied for a pair. A
+> contribution can **never** reorder items the primary or metadata keys already distinguish — it only
+> refines ordering among otherwise-identical-looking stacks. No priority value, however low, can
+> override the user's chosen order.
+
+Two entry points on `SortComparatorRegistry`:
+
+| Method | Use when |
+|---|---|
+| `registerKey(id, priority, applies, key)` | **Safe path** — your comparator only affects stacks your `applies` predicate accepts (both operands must match); everything else returns `0` and falls through. |
+| `register(id, priority, comparator)` | **Raw/advanced path** — a full `Comparator<ItemStack>`. You own the contract that it returns `0` for any pair it doesn't recognize. |
+
+```java
+import me.roundaround.inventorymanagement.api.sorting.SortComparatorRegistry;
+import net.minecraft.resources.Identifier;
+
+// Among otherwise-identical ammo stacks, order fuller stacks first.
+SortComparatorRegistry.registerKey(
+    Identifier.fromNamespaceAndPath("mymod", "ammo_by_fullness"),
+    100,
+    stack -> stack.is(MyItems.ARROW_QUIVER),
+    stack -> -stack.getCount());   // negative => higher count sorts earlier
+```
+
+- **Priority** — *lower number = consulted first = wins ties earlier*. The registry is
+  first-non-zero-wins, so the lowest-priority-number contribution that returns non-zero for a pair
+  decides it. Equal priority breaks by registration order (first registrant wins).
+- **Timing** — register from your mod-init entrypoint, *before* the first inventory sort. The
+  registry is read live (each sort sees current registrations), but registering *mid-sort* is
+  unsupported.
+- **Identity** — `id` is a label only (diagnostics). Re-registering the same id **appends** another
+  contribution; it does not replace.
+- **Enablement** — contributions are always-on. To give users a toggle, gate it inside your own
+  predicate/comparator with your mod's config; Inventory Management adds no GUI for them.
+
+### Datapack group tags (no code)
+
+Datapacks (or resourcepacks that ship data) can define grouping families with **no code**: any item
+tag whose path starts with `grouping/` automatically becomes a family.
+
+- File: `data/<namespace>/tags/item/grouping/<name>.json`
+- Tag id: `#<namespace>:grouping/<name>` — e.g. `#mymod:grouping/gems`
+
+```json
+{
+  "replace": false,
+  "values": [
+    "minecraft:diamond",
+    "minecraft:emerald",
+    "mymod:ruby"
+  ]
+}
+```
+
+- The cluster **anchors at the tag's language key** (e.g. `tag.item.mymod.grouping.gems`). Add that
+  key to your pack's `en_us.json` to give the cluster a friendly landing name; otherwise the raw key
+  is used. The anchor is reload-stable (it doesn't move when tag membership changes).
+- **Reload-aware** — item tags are synced to the client, so the datapack family set is rebuilt on
+  world join and on `/reload`.
+- **Toggles** — the `grouping.dynamicGroups` config option (default on) gates *all* datapack
+  families at once; `grouping.disabledDynamicGroups` (a list of tag ids in the config file) disables
+  individual ones.

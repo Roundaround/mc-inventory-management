@@ -36,7 +36,7 @@ public class InventoryButtonsManager {
   private final LinkedHashSet<InventoryManagementButton> playerButtons = new LinkedHashSet<>();
   private final LinkedHashSet<InventoryManagementButton> containerButtons = new LinkedHashSet<>();
   private final HashSet<Class<? extends Container>> sortableInventories = new HashSet<>();
-  private final HashSet<Class<? extends Container>> tranfserableInventories = new HashSet<>();
+  private final HashSet<Class<? extends Container>> transferableInventories = new HashSet<>();
   private final HashSet<Class<? extends AbstractContainerMenu>> sortableScreenHandlers = new HashSet<>();
   private final HashSet<Class<? extends AbstractContainerMenu>> transferableScreenHandlers = new HashSet<>();
 
@@ -64,7 +64,7 @@ public class InventoryButtonsManager {
   }
 
   public void registerTransferableContainer(Class<? extends Container> clazz) {
-    this.tranfserableInventories.add(clazz);
+    this.transferableInventories.add(clazz);
   }
 
   public void registerSimpleInventorySortableHandler(Class<? extends AbstractContainerMenu> clazz) {
@@ -171,7 +171,7 @@ public class InventoryButtonsManager {
         return;
       }
     } else {
-      if (this.tranfserableInventories.stream().noneMatch(clazz -> clazz.isInstance(fromInventory))) {
+      if (this.transferableInventories.stream().noneMatch(clazz -> clazz.isInstance(fromInventory))) {
         return;
       }
     }
@@ -181,7 +181,7 @@ public class InventoryButtonsManager {
         return;
       }
     } else {
-      if (this.tranfserableInventories.stream().noneMatch(clazz -> clazz.isInstance(toInventory))) {
+      if (this.transferableInventories.stream().noneMatch(clazz -> clazz.isInstance(toInventory))) {
         return;
       }
     }
@@ -226,7 +226,7 @@ public class InventoryButtonsManager {
         return;
       }
     } else {
-      if (this.tranfserableInventories.stream().noneMatch(clazz -> clazz.isInstance(fromInventory))) {
+      if (this.transferableInventories.stream().noneMatch(clazz -> clazz.isInstance(fromInventory))) {
         return;
       }
     }
@@ -236,7 +236,7 @@ public class InventoryButtonsManager {
         return;
       }
     } else {
-      if (this.tranfserableInventories.stream().noneMatch(clazz -> clazz.isInstance(toInventory))) {
+      if (this.transferableInventories.stream().noneMatch(clazz -> clazz.isInstance(toInventory))) {
         return;
       }
     }

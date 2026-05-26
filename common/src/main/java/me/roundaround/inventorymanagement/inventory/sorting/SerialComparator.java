@@ -1,19 +1,16 @@
 package me.roundaround.inventorymanagement.inventory.sorting;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
-public class SerialComparator<T> implements Comparator<T> {
-  private final List<Comparator<T>> subComparators;
-
-  private SerialComparator(List<Comparator<T>> subComparators) {
-    this.subComparators = subComparators;
-  }
-
+public interface SerialComparator<T> extends Comparator<T>, Iterable<Comparator<T>>, CachingComparator {
   @Override
-  public int compare(T o1, T o2) {
-    for (Comparator<T> comparator : this.subComparators) {
+  default int compare(T o1, T o2) {
+    for (Comparator<T> comparator : this) {
       int result = comparator.compare(o1, o2);
       if (result != 0) {
         return result;
@@ -22,12 +19,30 @@ public class SerialComparator<T> implements Comparator<T> {
     return 0;
   }
 
-  @SafeVarargs
-  public static <T> SerialComparator<T> comparing(Comparator<T>... baseComparators) {
-    return new SerialComparator<>(List.of(baseComparators));
+  @Override
+  default void clearCache() {
+    for (Comparator<T> comparator : this) {
+      if (comparator instanceof CachingComparator caching) {
+        caching.clearCache();
+      }
+    }
   }
 
-  public static <T> SerialComparator<T> comparing(Collection<Comparator<T>> baseComparators) {
-    return new SerialComparator<>(List.copyOf(baseComparators));
+  @SafeVarargs
+  static <T> SerialComparator<T> comparing(
+      Comparator<T>... delegates
+  ) {
+    return comparing(List.of(delegates));
+  }
+
+  static <T> SerialComparator<T> comparing(
+      Collection<Comparator<T>> delegates
+  ) {
+    return new SerialComparator<>() {
+      @Override
+      public @NotNull Iterator<Comparator<T>> iterator() {
+        return delegates.iterator();
+      }
+    };
   }
 }

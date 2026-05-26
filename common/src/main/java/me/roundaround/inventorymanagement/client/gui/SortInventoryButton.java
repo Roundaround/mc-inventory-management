@@ -4,6 +4,7 @@ import me.roundaround.inventorymanagement.client.gui.screen.ScreenPositioner;
 import me.roundaround.inventorymanagement.client.network.ClientNetworking;
 import me.roundaround.inventorymanagement.generated.Constants;
 import me.roundaround.trove.config.value.Position;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.resources.Identifier;
@@ -29,7 +30,7 @@ public class SortInventoryButton extends InventoryManagementButton {
         referenceSlot,
         offset,
         isPlayerInventory,
-        (button) -> ClientNetworking.sendSort(isPlayerInventory),
+        (button) -> ClientNetworking.sendSort(Minecraft.getInstance().player, isPlayerInventory),
         getTooltip(isPlayerInventory),
         TEXTURES
     );
@@ -48,7 +49,7 @@ public class SortInventoryButton extends InventoryManagementButton {
         referenceSlot,
         offset,
         isPlayerInventory,
-        (button) -> ClientNetworking.sendSort(isPlayerInventory),
+        (button) -> ClientNetworking.sendSort(Minecraft.getInstance().player, isPlayerInventory),
         getTooltip(isPlayerInventory),
         TEXTURES
     );
