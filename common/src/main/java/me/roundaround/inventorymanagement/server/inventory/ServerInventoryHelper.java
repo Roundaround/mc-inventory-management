@@ -1,5 +1,6 @@
 package me.roundaround.inventorymanagement.server.inventory;
 
+import me.roundaround.inventorymanagement.inventory.IgnoredSlots;
 import me.roundaround.inventorymanagement.inventory.SlotRange;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.Container;
@@ -18,17 +19,17 @@ public final class ServerInventoryHelper {
   private ServerInventoryHelper() {
   }
 
-  public static void applySort(Player player, boolean isPlayerInventory, List<Integer> sorted) {
+  public static void applySort(Player player, boolean isPlayerInventory, List<Integer> sorted, long lockedMask) {
     if (isPlayerInventory) {
-      applyPlayerSort(player, sorted);
+      applyPlayerSort(player, sorted, lockedMask);
     } else {
       applyContainerSort(player, sorted);
     }
   }
 
-  public static void applyPlayerSort(Player player, List<Integer> sorted) {
+  public static void applyPlayerSort(Player player, List<Integer> sorted, long lockedMask) {
     Container inventory = player.getInventory();
-    SlotRange slotRange = SlotRange.playerMainRange();
+    SlotRange slotRange = IgnoredSlots.playerLockedRange(lockedMask);
     applySort(player, inventory, slotRange, sorted);
   }
 
@@ -101,20 +102,22 @@ public final class ServerInventoryHelper {
     }
   }
 
-  public static void autoStack(Player player, boolean fromPlayerInventory) {
+  public static void autoStack(Player player, boolean fromPlayerInventory, long lockedMask) {
     Container containerInventory = getContainerInventory(player);
     if (containerInventory == null) {
       return;
     }
 
     Container playerInventory = player.getInventory();
-    SlotRange playerSlotRange = SlotRange.playerMainRange();
     SlotRange containerSlotRange = SlotRange.fullRange(containerInventory);
 
     if (fromPlayerInventory) {
+      // Player inventory is the source: locked slots must not give up their items.
+      SlotRange playerSlotRange = IgnoredSlots.playerLockedRange(lockedMask);
       autoStackInventories(playerInventory, playerSlotRange, containerInventory, containerSlotRange, player);
     } else {
-      autoStackInventories(containerInventory, containerSlotRange, playerInventory, playerSlotRange, player);
+      // Player inventory is the destination: locked slots may still receive items from the container.
+      autoStackInventories(containerInventory, containerSlotRange, playerInventory, SlotRange.playerMainRange(), player);
     }
   }
 
@@ -124,14 +127,13 @@ public final class ServerInventoryHelper {
     transferEntireInventory(from, fromRange, to, toRange, (fromStack, toStack) -> !toStack.isEmpty(), player);
   }
 
-  public static void transferAll(Player player, boolean fromPlayerInventory) {
+  public static void transferAll(Player player, boolean fromPlayerInventory, long lockedMask) {
     Container containerInventory = getContainerInventory(player);
     if (containerInventory == null) {
       return;
     }
 
     Container playerInventory = player.getInventory();
-    SlotRange playerSlotRange = SlotRange.playerMainRange();
     SlotRange containerSlotRange = SlotRange.fullRange(containerInventory);
 
     if (player.containerMenu instanceof HorseInventoryMenu) {
@@ -139,9 +141,10 @@ public final class ServerInventoryHelper {
     }
 
     if (fromPlayerInventory) {
+      // Player inventory is the source: locked slots must not give up their items.
       transferEntireInventory(
           playerInventory,
-          playerSlotRange,
+          IgnoredSlots.playerLockedRange(lockedMask),
           containerInventory,
           containerSlotRange,
           player.inventoryMenu,
@@ -149,11 +152,12 @@ public final class ServerInventoryHelper {
           player
       );
     } else {
+      // Player inventory is the destination: locked slots may still receive items from the container.
       transferEntireInventory(
           containerInventory,
           containerSlotRange,
           playerInventory,
-          playerSlotRange,
+          SlotRange.playerMainRange(),
           player.containerMenu,
           player.inventoryMenu,
           player

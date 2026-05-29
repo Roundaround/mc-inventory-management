@@ -38,6 +38,12 @@ You can configure the behavior of the mod from the `inventorymanagement.toml` fi
 
 `itemGrouping`: `true|false` (default `true`) - Master toggle for variant grouping: cluster related families of items (all wool colors, all planks, …) together instead of sorting each variant purely by name. See [Item grouping](#item-grouping) below.
 
+**Locked slots**
+
+`lockedSlotDisplay`: `"shown"|"hidden"|"hotkey"` (default `"shown"`) - When to draw the marker (border + darkened background) on locked slots. `shown` always draws it; `hidden` never does; `hotkey` only draws it while the **Peek locked slots** key binding is held. Locking itself (`Ctrl/Cmd`+click) and the hover tooltip are unaffected. See [Locked slots](#locked-slots) below.
+
+`lockedPlayerSlots`: `[<Integer>, …]` (default empty) - The set of locked player main-inventory slot indices. Managed for you by `Ctrl/Cmd`+clicking slots in-game; there is no GUI control, but it lives in the config file if you need to inspect or clear it.
+
 **Button position**
 
 `defaultPosition`: `"(<Integer>,<Integer>)"` - Customize a default for button position.
@@ -91,6 +97,16 @@ Similar to the transfer all buttons, there will also be buttons for stacking int
 ### After
 
 ![](https://i.imgur.com/yXyvZO6.png)
+
+## Locked slots
+
+Got a slot you never want disturbed — your spare blocks, food, or that one stack you keep in the same spot out of habit? **Lock it.** Hold `Ctrl/Cmd` and click any slot in your main inventory to toggle a lock on it. Locked slots are skipped by **sort**, **auto-stack**, and **transfer-all (place/take)**, so those operations will never move, reorder, or pull items out of a locked slot. Locking and unlocking is the same `Ctrl/Cmd`+click, and it works with either mouse button.
+
+Only the main inventory grid is lockable — your hotbar, armor, off-hand, and any open container's slots aren't (the hotbar is already ignored by every operation anyway). Locks are saved to your config, so they persist across sessions, and an empty locked slot stays reserved: a transfer won't fill it.
+
+By default a locked slot is marked with a subtle darkened background and a border drawn beneath the item, and hovering it shows a `Locked (Ctrl+click to unlock)` tooltip. Don't like the markers? The `lockedSlotDisplay` config option (see [Configuration](#configuration)) lets you set them to **Always shown** (default), **Hidden**, or **While hotkey held** — the last only draws them while you hold the **Peek locked slots** key binding, keeping your inventory clean until you want to check what's locked. The hover tooltip always shows regardless, so a locked slot is never a mystery.
+
+> **Tip:** like all of Inventory Management's key bindings, **Peek locked slots** is unbound by default. Assign it under Options → Controls in the **Inventory Management** category if you want to use the `hotkey` display mode.
 
 ---
 

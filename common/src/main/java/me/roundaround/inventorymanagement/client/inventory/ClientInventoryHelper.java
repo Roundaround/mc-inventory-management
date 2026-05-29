@@ -1,5 +1,6 @@
 package me.roundaround.inventorymanagement.client.inventory;
 
+import me.roundaround.inventorymanagement.inventory.IgnoredSlots;
 import me.roundaround.inventorymanagement.inventory.InventoryHelper;
 import me.roundaround.inventorymanagement.inventory.SlotRange;
 import me.roundaround.inventorymanagement.inventory.SortableInventory;
@@ -13,9 +14,9 @@ public final class ClientInventoryHelper {
   private ClientInventoryHelper() {
   }
 
-  public static List<Integer> calculatePlayerSort(Player player) {
+  public static List<Integer> calculatePlayerSort(Player player, long lockedMask) {
     Container inventory = player.getInventory();
-    SlotRange slotRange = SlotRange.playerMainRange();
+    SlotRange slotRange = IgnoredSlots.playerLockedRange(lockedMask);
     return calculateSort(player, inventory, slotRange);
   }
 

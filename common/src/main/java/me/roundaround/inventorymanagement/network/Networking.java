@@ -27,50 +27,61 @@ public final class Networking {
 
   public static void register() {
     TroveNetworking.registerC2S(StackC2S.ID, StackC2S.CODEC,
-        (payload, player) -> ServerInventoryHelper.autoStack(player, payload.fromPlayerInventory()));
+        (payload, player) -> ServerInventoryHelper.autoStack(player, payload.fromPlayerInventory(),
+            payload.lockedMask()));
     TroveNetworking.registerC2S(SortC2S.ID, SortC2S.CODEC,
-        (payload, player) -> ServerInventoryHelper.applySort(player, payload.isPlayerInventory(), payload.sorted()));
+        (payload, player) -> ServerInventoryHelper.applySort(player, payload.isPlayerInventory(), payload.sorted(),
+            payload.lockedMask()));
     TroveNetworking.registerC2S(SortAllC2S.ID, SortAllC2S.CODEC,
         (payload, player) -> {
-          ServerInventoryHelper.applySort(player, true, payload.playerSorted());
-          ServerInventoryHelper.applySort(player, false, payload.containerSorted());
+          ServerInventoryHelper.applySort(player, true, payload.playerSorted(), payload.lockedMask());
+          ServerInventoryHelper.applySort(player, false, payload.containerSorted(), payload.lockedMask());
         });
     TroveNetworking.registerC2S(TransferC2S.ID, TransferC2S.CODEC,
-        (payload, player) -> ServerInventoryHelper.transferAll(player, payload.fromPlayerInventory()));
+        (payload, player) -> ServerInventoryHelper.transferAll(player, payload.fromPlayerInventory(),
+            payload.lockedMask()));
   }
 
-  public record StackC2S(boolean fromPlayerInventory) implements CustomPacketPayload {
+  public record StackC2S(boolean fromPlayerInventory, long lockedMask) implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<StackC2S> ID = new CustomPacketPayload.Type<>(STACK_C2S);
     public static final StreamCodec<RegistryFriendlyByteBuf, StackC2S> CODEC = StreamCodec.composite(
-        ByteBufCodecs.BOOL, StackC2S::fromPlayerInventory, StackC2S::new);
+        ByteBufCodecs.BOOL, StackC2S::fromPlayerInventory,
+        ByteBufCodecs.VAR_LONG, StackC2S::lockedMask,
+        StackC2S::new);
 
     @Override @NotNull public Type<? extends CustomPacketPayload> type() { return ID; }
   }
 
-  public record SortC2S(boolean isPlayerInventory, List<Integer> sorted) implements CustomPacketPayload {
+  public record SortC2S(boolean isPlayerInventory, List<Integer> sorted, long lockedMask)
+      implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<SortC2S> ID = new CustomPacketPayload.Type<>(SORT_C2S);
     public static final StreamCodec<RegistryFriendlyByteBuf, SortC2S> CODEC = StreamCodec.composite(
         ByteBufCodecs.BOOL, SortC2S::isPlayerInventory,
         INT_LIST_CODEC, SortC2S::sorted,
+        ByteBufCodecs.VAR_LONG, SortC2S::lockedMask,
         SortC2S::new);
 
     @Override @NotNull public Type<? extends CustomPacketPayload> type() { return ID; }
   }
 
-  public record SortAllC2S(List<Integer> playerSorted, List<Integer> containerSorted) implements CustomPacketPayload {
+  public record SortAllC2S(List<Integer> playerSorted, List<Integer> containerSorted, long lockedMask)
+      implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<SortAllC2S> ID = new CustomPacketPayload.Type<>(SORT_ALL_C2S);
     public static final StreamCodec<RegistryFriendlyByteBuf, SortAllC2S> CODEC = StreamCodec.composite(
         INT_LIST_CODEC, SortAllC2S::playerSorted,
         INT_LIST_CODEC, SortAllC2S::containerSorted,
+        ByteBufCodecs.VAR_LONG, SortAllC2S::lockedMask,
         SortAllC2S::new);
 
     @Override @NotNull public Type<? extends CustomPacketPayload> type() { return ID; }
   }
 
-  public record TransferC2S(boolean fromPlayerInventory) implements CustomPacketPayload {
+  public record TransferC2S(boolean fromPlayerInventory, long lockedMask) implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<TransferC2S> ID = new CustomPacketPayload.Type<>(TRANSFER_C2S);
     public static final StreamCodec<RegistryFriendlyByteBuf, TransferC2S> CODEC = StreamCodec.composite(
-        ByteBufCodecs.BOOL, TransferC2S::fromPlayerInventory, TransferC2S::new);
+        ByteBufCodecs.BOOL, TransferC2S::fromPlayerInventory,
+        ByteBufCodecs.VAR_LONG, TransferC2S::lockedMask,
+        TransferC2S::new);
 
     @Override @NotNull public Type<? extends CustomPacketPayload> type() { return ID; }
   }

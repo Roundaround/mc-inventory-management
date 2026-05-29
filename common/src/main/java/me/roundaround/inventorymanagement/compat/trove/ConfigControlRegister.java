@@ -3,6 +3,7 @@ package me.roundaround.inventorymanagement.compat.trove;
 import com.mojang.logging.LogUtils;
 import me.roundaround.inventorymanagement.client.gui.screen.DefaultPositionEditScreen;
 import me.roundaround.inventorymanagement.config.InventoryManagementConfig;
+import me.roundaround.inventorymanagement.config.LockedSlotDisplay;
 import me.roundaround.inventorymanagement.config.SortMode;
 import me.roundaround.trove.client.gui.widget.config.ControlRegistry;
 import me.roundaround.trove.client.gui.widget.config.SubScreenControl;
@@ -19,6 +20,9 @@ public final class ConfigControlRegister {
       // SortMode is a mod-defined EnumValue, so Trove has no built-in control for it; register the
       // standard enum cycle control or the config GUI throws NotRegisteredException when it builds.
       ControlRegistry.registerOptionList(SortMode.class);
+
+      // LockedSlotDisplay is likewise a mod-defined EnumValue and needs the same enum cycle control.
+      ControlRegistry.registerOptionList(LockedSlotDisplay.class);
 
       ControlRegistry.register(
           InventoryManagementConfig.getInstance().defaultPosition.getId(),

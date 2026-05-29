@@ -11,6 +11,7 @@ import me.roundaround.trove.config.option.PositionConfigOption;
 import me.roundaround.trove.config.option.StringListConfigOption;
 import me.roundaround.trove.config.value.Position;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.function.BooleanSupplier;
@@ -83,6 +84,23 @@ public class InventoryManagementConfig extends ModConfigImpl implements GameScop
    * control in v1.
    */
   public StringListConfigOption disabledDynamicGroups;
+
+  /**
+   * Absolute player main-inventory slot indices the user has locked. Locked slots are excluded from
+   * sort, auto-stack, and transfer-all (both directions). Client-only and stateless on the server:
+   * the list rides along inside each operation packet. Managed programmatically via
+   * {@link #toggleLockedPlayerSlot(int)}; no GUI control.
+   */
+  public IntListConfigOption lockedPlayerSlots;
+
+  /**
+   * When the locked-slot marker (darkened background + border under the item) is drawn. Defaults to
+   * {@link LockedSlotDisplay#SHOWN} — always visible; {@link LockedSlotDisplay#HOTKEY} restricts it to
+   * while the "Peek locked slots" keybind is held. Rendered in the config GUI as an enum cycle control
+   * (registered in {@code ConfigControlRegister}). Does not affect locking itself or the hover tooltip;
+   * only the marker rendering in {@code SlotLockMixin}.
+   */
+  public EnumConfigOption<LockedSlotDisplay> lockedSlotDisplay;
 
   public InventoryManagementConfig() {
     super(Constants.MOD_ID);
@@ -172,6 +190,18 @@ public class InventoryManagementConfig extends ModConfigImpl implements GameScop
             "screenPositions"))
         .setComment("Customize button position on a per-screen basis.")
         .build()).clientOnly().noGuiControl().commit();
+
+    this.lockedPlayerSlots = this.buildRegistration(IntListConfigOption.builder(ConfigPath.of("lockedPlayerSlots"))
+        .setComment(
+            "Player main-inventory slot indices to lock from sorting, auto-stacking, and transfer-all. Managed programmatically; no GUI control.")
+        .build()).clientOnly().noGuiControl().commit();
+
+    this.lockedSlotDisplay = this.buildRegistration(EnumConfigOption.builder(ConfigPath.of("lockedSlotDisplay"),
+            List.of(LockedSlotDisplay.values()))
+        .setDefaultValue(LockedSlotDisplay.getDefault())
+        .setComment(
+            "When to draw the locked-slot marker (border + darkened background). 'shown' always draws it; 'hidden' never does; 'hotkey' only while the 'Peek locked slots' keybind is held.")
+        .build()).clientOnly().commit();
   }
 
   /**
@@ -205,5 +235,43 @@ public class InventoryManagementConfig extends ModConfigImpl implements GameScop
       }
       return this.dynamicGroupsEnabled.getValue() && !this.disabledDynamicGroups.getValue().contains(fullTagId);
     };
+  }
+
+  /**
+   * The current set of locked player main-inventory slot indices. Returns the committed value, which
+   * is kept in lockstep with the pending value because {@link #toggleLockedPlayerSlot(int)} persists
+   * immediately. Returns an empty list before init.
+   */
+  public List<Integer> getLockedPlayerSlots() {
+    if (!this.isInitialized()) {
+      return List.of();
+    }
+    return this.lockedPlayerSlots.getValue();
+  }
+
+  /**
+   * The current locked-slot marker display mode, guarded against pre-init access (returns the default,
+   * {@link LockedSlotDisplay#SHOWN}, before the config is initialized).
+   */
+  public LockedSlotDisplay getLockedSlotDisplay() {
+    if (!this.isInitialized() || this.lockedSlotDisplay == null) {
+      return LockedSlotDisplay.getDefault();
+    }
+    return this.lockedSlotDisplay.getValue();
+  }
+
+  /**
+   * Flips membership of {@code slot} in {@link #lockedPlayerSlots} and persists immediately. Intended
+   * for user-driven actions only (a single Ctrl+click), not high-frequency loops.
+   */
+  public void toggleLockedPlayerSlot(int slot) {
+    List<Integer> current = new ArrayList<>(this.lockedPlayerSlots.getPendingValue());
+    if (current.contains(slot)) {
+      current.remove(Integer.valueOf(slot));
+    } else {
+      current.add(slot);
+    }
+    this.lockedPlayerSlots.setValue(current);
+    this.writeToStore();
   }
 }
