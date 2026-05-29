@@ -6,7 +6,7 @@
 
 [![Modrinth Downloads](https://img.shields.io/modrinth/dt/inventory-management?style=flat&logo=modrinth&color=00AF5C)](https://modrinth.com/mod/inventory-management)
 [![CurseForge Downloads](https://img.shields.io/curseforge/dt/1293402?style=flat&logo=curseforge&color=F16436)](https://www.curseforge.com/minecraft/mc-mods/inventory-management)
-[![GitHub Repo stars](https://img.shields.io/github/stars/Roundaround/mc-fabric-inventory-management?style=flat&logo=github)](https://github.com/Roundaround/mc-fabric-inventory-management)
+[![GitHub Repo stars](https://img.shields.io/github/stars/Roundaround/mc-inventory-management?style=flat&logo=github)](https://github.com/Roundaround/mc-inventory-management)
 
 [![Support me on Ko-fi](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/compact/donate/kofi-singular-alt_vector.svg)](https://ko-fi.com/roundaround)
 

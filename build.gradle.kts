@@ -8,8 +8,8 @@ allay {
   authors.set(listOf("Roundaround"))
   license.set("MIT")
   homepage.set("https://modrinth.com/mod/inventory-management")
-  repository.set("https://github.com/Roundaround/mc-fabric-inventory-management")
-  issues.set("https://github.com/Roundaround/mc-fabric-inventory-management/issues")
+  repository.set("https://github.com/Roundaround/mc-inventory-management")
+  issues.set("https://github.com/Roundaround/mc-inventory-management/issues")
   logoFile.set("assets/inventorymanagement/banner.png")
 
   modrinth {
