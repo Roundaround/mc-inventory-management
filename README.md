@@ -62,6 +62,8 @@ You can configure the behavior of the mod from the `inventorymanagement.toml` fi
 
 In order to maintain compatibility with other mods, you can now adjust the positions of your inventory management buttons! To adjust the position for all buttons, check out the option in the config for `defaultPosition` or if you have ModMenu installed, in the config UI. If you have a particular screen that needs adjusted (maybe another mod added more inventory space, for example), you can hold `Ctrl/Cmd` and click on one of the UI buttons to open up the per-screen position editor! This editor will adjust the button positions for the current screen only, so you can tweak the positions all you want to get it aligned with your shiny backpack mod's UI! ;)
 
+`Ctrl/Cmd`+click is the primary way in, but there are also dedicated key bindings to open the editor (one for the player inventory buttons, one for the container buttons). **All of Inventory Management's key bindings are unbound by default** — if you'd like to use them, assign keys under Options → Controls in the **Inventory Management** category.
+
 ---
 
 ## Sort

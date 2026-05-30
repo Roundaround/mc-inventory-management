@@ -13,7 +13,7 @@ public class InventoryManagementClientMod implements ClientModInitializer {
   public void onInitializeClient() {
     InventoryButtonsManager.INSTANCE.init();
     ConfigControlRegister.init();
-    InventoryManagementKeyBindings.init();
+    InventoryManagementKeyMappings.init();
 
     BuiltinResourcePack.register(
         Constants.MOD_ID,

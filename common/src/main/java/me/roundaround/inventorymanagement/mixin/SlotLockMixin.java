@@ -1,7 +1,7 @@
 package me.roundaround.inventorymanagement.mixin;
 
 import me.roundaround.allay.api.MixinEnv;
-import me.roundaround.inventorymanagement.client.InventoryManagementKeyBindings;
+import me.roundaround.inventorymanagement.client.InventoryManagementKeyMappings;
 import me.roundaround.inventorymanagement.config.InventoryManagementConfig;
 import me.roundaround.inventorymanagement.config.LockedSlotDisplay;
 import me.roundaround.inventorymanagement.inventory.IgnoredSlots;
@@ -121,7 +121,7 @@ public abstract class SlotLockMixin {
     return switch (InventoryManagementConfig.getInstance().getLockedSlotDisplay()) {
       case SHOWN -> true;
       case HIDDEN -> false;
-      case HOTKEY -> KeyBindings.isHeld(InventoryManagementKeyBindings.peekLockedSlots);
+      case HOTKEY -> KeyBindings.isHeld(InventoryManagementKeyMappings.peekLockedSlots);
     };
   }
 

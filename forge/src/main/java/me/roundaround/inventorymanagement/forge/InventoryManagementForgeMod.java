@@ -3,7 +3,7 @@ package me.roundaround.inventorymanagement.forge;
 import me.roundaround.inventorymanagement.api.sorting.DynamicTagGroups;
 import me.roundaround.inventorymanagement.api.sorting.GroupBootstrap;
 import me.roundaround.inventorymanagement.client.InventoryButtonsManager;
-import me.roundaround.inventorymanagement.client.InventoryManagementKeyBindings;
+import me.roundaround.inventorymanagement.client.InventoryManagementKeyMappings;
 import me.roundaround.inventorymanagement.compat.trove.ConfigControlRegister;
 import me.roundaround.inventorymanagement.config.InventoryManagementConfig;
 import me.roundaround.inventorymanagement.generated.Constants;
@@ -40,7 +40,7 @@ public final class InventoryManagementForgeMod {
                 .addListener(event -> {
                     InventoryButtonsManager.INSTANCE.init();
                     ConfigControlRegister.init();
-                    InventoryManagementKeyBindings.init();
+                    InventoryManagementKeyMappings.init();
 
                     BuiltinResourcePack.register(
                             Constants.MOD_ID,
