@@ -15,6 +15,8 @@ public final class InventoryManagementKeyMappings {
   public static KeyMapping positionEditPlayer;
   public static KeyMapping positionEditContainer;
   public static KeyMapping peekLockedSlots;
+  public static KeyMapping hotbarSwapModifier;
+  public static KeyMapping hotbarSwapReset;
 
   private static boolean initialized = false;
 
@@ -48,6 +50,20 @@ public final class InventoryManagementKeyMappings {
 
     peekLockedSlots = KeyBindings.register(new KeyMapping(
         "inventorymanagement.keybind.peek_locked_slots",
+        InputConstants.Type.KEYSYM,
+        InputConstants.UNKNOWN.getValue(),
+        category
+    ));
+
+    hotbarSwapModifier = KeyBindings.register(new KeyMapping(
+        "inventorymanagement.keybind.hotbar_swap.modifier",
+        InputConstants.Type.KEYSYM,
+        InputConstants.UNKNOWN.getValue(),
+        category
+    ));
+
+    hotbarSwapReset = KeyBindings.register(new KeyMapping(
+        "inventorymanagement.keybind.hotbar_swap.reset",
         InputConstants.Type.KEYSYM,
         InputConstants.UNKNOWN.getValue(),
         category

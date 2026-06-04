@@ -2,6 +2,7 @@ package me.roundaround.inventorymanagement.neoforge;
 
 import me.roundaround.inventorymanagement.api.sorting.DynamicTagGroups;
 import me.roundaround.inventorymanagement.api.sorting.GroupBootstrap;
+import me.roundaround.inventorymanagement.client.HotbarSwapClient;
 import me.roundaround.inventorymanagement.client.InventoryButtonsManager;
 import me.roundaround.inventorymanagement.client.InventoryManagementKeyMappings;
 import me.roundaround.inventorymanagement.compat.trove.ConfigControlRegister;
@@ -41,6 +42,7 @@ public final class InventoryManagementNeoForgeMod {
             InventoryButtonsManager.INSTANCE.init();
             ConfigControlRegister.init();
             InventoryManagementKeyMappings.init();
+            HotbarSwapClient.init();
 
             BuiltinResourcePack.register(
                     Constants.MOD_ID,

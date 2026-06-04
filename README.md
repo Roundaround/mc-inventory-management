@@ -44,6 +44,10 @@ You can configure the behavior of the mod from the `inventorymanagement.toml` fi
 
 `lockedPlayerSlots`: `[<Integer>, …]` (default empty) - The set of locked player main-inventory slot indices. Managed for you by `Ctrl/Cmd`+clicking slots in-game; there is no GUI control, but it lives in the config file if you need to inspect or clear it.
 
+**Hotbar swapping**
+
+`hotbarSwapNumberKeys`: `true|false` (default `true`) - While holding the **Hotbar swap (hold)** key binding, let number keys `1`-`3` select a main-inventory row to swap into the hotbar (and re-pressing the active row's number swaps it back). On by default; turn it off to keep number keys changing your selected hotbar slot even while the key is held. Scrolling with the key held always works regardless. See [Hotbar swapping](#hotbar-swapping) below.
+
 **Button position**
 
 `defaultPosition`: `"(<Integer>,<Integer>)"` - Customize a default for button position.
@@ -109,6 +113,22 @@ Only the main inventory grid is lockable — your hotbar, armor, off-hand, and a
 By default a locked slot is marked with a subtle darkened background and a border drawn beneath the item, and hovering it shows a `Locked (Ctrl+click to unlock)` tooltip. Don't like the markers? The `lockedSlotDisplay` config option (see [Configuration](#configuration)) lets you set them to **Always shown** (default), **Hidden**, or **While hotkey held** — the last only draws them while you hold the **Peek locked slots** key binding, keeping your inventory clean until you want to check what's locked. The hover tooltip always shows regardless, so a locked slot is never a mystery.
 
 > **Tip:** like all of Inventory Management's key bindings, **Peek locked slots** is unbound by default. Assign it under Options → Controls in the **Inventory Management** category if you want to use the `hotkey` display mode.
+
+---
+
+## Hotbar swapping
+
+Want a second (or third) bar of items within thumb's reach without opening your inventory? **Hold the swap key and scroll.** Each scroll cycles which of your three main-inventory rows is exchanged with your hotbar: normal → row 1 → row 2 → row 3 → normal, wrapping around. The items physically swap places, so whatever was on your hotbar lands in that row and vice versa — only ever one row is displaced at a time, and scrolling back to normal puts everything home.
+
+Prefer pressing a key over scrolling? With the `hotbarSwapNumberKeys` option on (the default — see [Configuration](#configuration)), while you hold the swap key, number keys `1`-`3` jump straight to that row; pressing the active row's number again swaps it back to normal. While the swap key is held the number keys won't change your selected hotbar slot, so `4`-`9` are simply ignored. Turn the option off if you'd rather number keys always behave normally even with the swap key held.
+
+A small marker shows which row is active: a colored tab to the left of the swapped row in any inventory/container screen, and an unobtrusive badge with the row number (`1`-`3`) just left of the hotbar on the in-game HUD.
+
+If you ever get out of sync — for example after quitting the game mid-swap — press the **Reset hotbar swap** key binding. It clears the mod's tracking back to "normal" **without moving any items**, re-baselining to whatever is physically on your hotbar right now.
+
+> **Note:** because the items physically swap places (and the server saves them), quitting while a row is swapped in leaves those items displaced when you log back in, even though the indicator shows "normal". To put everything home, re-select that row (scroll or number-key it back in) and then scroll back to normal.
+
+> **Tip:** like all of Inventory Management's key bindings, both **Hotbar swap (hold)** and **Reset hotbar swap** are unbound by default. Assign them under Options → Controls in the **Inventory Management** category to use this feature.
 
 ---
 

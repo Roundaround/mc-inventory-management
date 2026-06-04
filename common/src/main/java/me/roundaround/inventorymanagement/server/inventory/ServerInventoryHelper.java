@@ -19,6 +19,49 @@ public final class ServerInventoryHelper {
   private ServerInventoryHelper() {
   }
 
+  /**
+   * Apply a hotbar row swap requested by the client. {@code previousRow} (the row that was swapped in
+   * before this request) is restored to its home first, then {@code newRow} is swapped into the
+   * hotbar, so at most one row is ever displaced at a time. Both are clamped to {@code 0..3}; 0 means
+   * "no row" (normal layout). No-op when they are equal.
+   *
+   * <p>The whole-row swap intentionally ignores the locked-slots feature: it exchanges all nine slots
+   * of a row with the nine hotbar slots regardless of any locks, since the swap is a transient display
+   * convenience rather than a sort/transfer operation.
+   */
+  public static void swapHotbarRows(Player player, int previousRow, int newRow) {
+    previousRow = Math.max(0, Math.min(3, previousRow));
+    newRow = Math.max(0, Math.min(3, newRow));
+    if (previousRow == newRow) {
+      return;
+    }
+
+    Container inv = player.getInventory();
+    // A real player inventory is always >= 36 (36 main slots + armor/offhand, getContainerSize() ~41),
+    // so this never trips today. Kept as a guard in case this is ever called with a smaller Container,
+    // since the slot math below assumes the vanilla hotbar (0-8) + main-grid (9-35) layout.
+    if (inv.getContainerSize() < 36) {
+      return;
+    }
+
+    if (previousRow != 0) {
+      swapRowWithHotbar(inv, previousRow);
+    }
+    if (newRow != 0) {
+      swapRowWithHotbar(inv, newRow);
+    }
+  }
+
+  private static void swapRowWithHotbar(Container inv, int row) {
+    int base = 9 + (row - 1) * 9;
+    for (int i = 0; i < 9; i++) {
+      ItemStack hot = inv.getItem(i).copy();
+      ItemStack rowStack = inv.getItem(base + i).copy();
+      inv.setItem(i, rowStack);
+      inv.setItem(base + i, hot);
+    }
+  }
+
   public static void applySort(Player player, boolean isPlayerInventory, List<Integer> sorted, long lockedMask) {
     if (isPlayerInventory) {
       applyPlayerSort(player, sorted, lockedMask);

@@ -14,6 +14,7 @@ public class InventoryManagementClientMod implements ClientModInitializer {
     InventoryButtonsManager.INSTANCE.init();
     ConfigControlRegister.init();
     InventoryManagementKeyMappings.init();
+    HotbarSwapClient.init();
 
     BuiltinResourcePack.register(
         Constants.MOD_ID,

@@ -102,6 +102,13 @@ public class InventoryManagementConfig extends ModConfigImpl implements GameScop
    */
   public EnumConfigOption<LockedSlotDisplay> lockedSlotDisplay;
 
+  /**
+   * Whether number keys 1-3 select a row to swap into the hotbar while the hotbar-swap modifier
+   * keybind is held. Defaults off; scrolling with the modifier held always works regardless. When on,
+   * keys 4-9 are consumed (no hotbar slot change) while the modifier is held. Client-only.
+   */
+  public BooleanConfigOption hotbarSwapNumberKeys;
+
   public InventoryManagementConfig() {
     super(Constants.MOD_ID);
   }
@@ -201,6 +208,13 @@ public class InventoryManagementConfig extends ModConfigImpl implements GameScop
         .setDefaultValue(LockedSlotDisplay.getDefault())
         .setComment(
             "When to draw the locked-slot marker (border + darkened background). 'shown' always draws it; 'hidden' never does; 'hotkey' only while the 'Peek locked slots' keybind is held.")
+        .build()).clientOnly().commit();
+
+    this.hotbarSwapNumberKeys = this.buildRegistration(BooleanConfigOption.builder(ConfigPath.of(
+        "hotbarSwapNumberKeys"))
+        .setDefaultValue(true)
+        .setComment(
+            "While holding the hotbar-swap key, let number keys 1-3 select a row to swap into the hotbar.")
         .build()).clientOnly().commit();
   }
 

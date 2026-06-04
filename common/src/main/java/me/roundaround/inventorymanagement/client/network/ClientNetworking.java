@@ -43,4 +43,8 @@ public final class ClientNetworking {
   public static void sendTransfer(boolean fromPlayerInventory) {
     TroveNetworking.sendToServer(new Networking.TransferC2S(fromPlayerInventory, lockedMask()));
   }
+
+  public static void sendHotbarSwap(int previousRow, int newRow) {
+    TroveNetworking.sendToServer(new Networking.HotbarSwapC2S(previousRow, newRow));
+  }
 }
