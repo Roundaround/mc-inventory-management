@@ -38,6 +38,15 @@ public class PlayerHeadNameComparatorTest extends BaseMinecraftTest {
   }
 
   @Test
+  void caseInsensitiveSorting() {
+    assertPreservesOrder(comparator, Lists.newArrayList(
+        createHead("apple"),
+        createHead("Banana"),
+        createHead("cherry")
+    ));
+  }
+
+  @Test
   void namedHeadsSortBeforeUnnamed() {
     PlayerHeadNameComparator comp = new PlayerHeadNameComparator();
     ItemStack named = createHead("Alice");

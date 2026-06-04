@@ -1,6 +1,5 @@
 package me.roundaround.inventorymanagement.inventory.sorting.itemstack;
 
-import com.google.common.collect.Lists;
 import me.roundaround.inventorymanagement.testing.BaseMinecraftTest;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
@@ -16,7 +15,6 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static me.roundaround.inventorymanagement.testing.DataGen.getUniquePairs;
-import static me.roundaround.inventorymanagement.testing.IterableMatchHelpers.assertPreservesOrder;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -45,20 +43,29 @@ public class CustomNameComparatorTest extends BaseMinecraftTest {
 
   @Test
   void sortsAlphabeticallyByCustomName() {
-    assertPreservesOrder(comparator, Lists.newArrayList(
-        createNamed(Items.DIAMOND, "Alpha"),
-        createNamed(Items.DIAMOND, "Beta"),
-        createNamed(Items.DIAMOND, "Gamma")
-    ));
+    ItemStack alpha = createNamed(Items.DIAMOND, "Alpha");
+    ItemStack beta = createNamed(Items.DIAMOND, "Beta");
+    ItemStack gamma = createNamed(Items.DIAMOND, "Gamma");
+
+    assertTrue(comparator.compare(alpha, beta) < 0, "Alpha should sort before Beta");
+    assertTrue(comparator.compare(beta, gamma) < 0, "Beta should sort before Gamma");
+    assertTrue(comparator.compare(gamma, alpha) > 0, "Gamma should sort after Alpha");
+    assertEquals(0, comparator.compare(alpha, createNamed(Items.DIAMOND, "Alpha")),
+        "Equal custom names should compare as equal");
   }
 
   @Test
   void caseInsensitiveSorting() {
-    assertPreservesOrder(comparator, Lists.newArrayList(
-        createNamed(Items.DIAMOND, "apple"),
-        createNamed(Items.DIAMOND, "Banana"),
-        createNamed(Items.DIAMOND, "cherry")
-    ));
+    ItemStack apple = createNamed(Items.DIAMOND, "apple");
+    ItemStack banana = createNamed(Items.DIAMOND, "Banana");
+    ItemStack cherry = createNamed(Items.DIAMOND, "cherry");
+
+    // Under plain String::compareTo, uppercase 'B' (66) would sort before lowercase 'a' (97),
+    // breaking apple < Banana. These assertions only pass with nullsLast(compareToIgnoreCase).
+    assertTrue(comparator.compare(apple, banana) < 0, "apple should sort before Banana (case-insensitive)");
+    assertTrue(comparator.compare(banana, cherry) < 0, "Banana should sort before cherry (case-insensitive)");
+    assertEquals(0, comparator.compare(createNamed(Items.DIAMOND, "Same"), createNamed(Items.DIAMOND, "SAME")),
+        "Names differing only in case should compare as equal");
   }
 
   @Test
