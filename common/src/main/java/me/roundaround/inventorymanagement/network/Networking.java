@@ -9,6 +9,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.EquipmentSlot;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -22,6 +23,8 @@ public final class Networking {
   public static final Identifier SORT_ALL_C2S = Identifier.fromNamespaceAndPath(Constants.MOD_ID, "sort_all_c2s");
   public static final Identifier TRANSFER_C2S = Identifier.fromNamespaceAndPath(Constants.MOD_ID, "transfer_c2s");
   public static final Identifier HOTBAR_SWAP_C2S = Identifier.fromNamespaceAndPath(Constants.MOD_ID, "hotbar_swap_c2s");
+  public static final Identifier DURABILITY_REPLACE_C2S =
+      Identifier.fromNamespaceAndPath(Constants.MOD_ID, "durability_replace_c2s");
 
   private static final StreamCodec<ByteBuf, List<Integer>> INT_LIST_CODEC =
       ByteBufCodecs.VAR_INT.apply(ByteBufCodecs.list());
@@ -44,6 +47,9 @@ public final class Networking {
     TroveNetworking.registerC2S(HotbarSwapC2S.ID, HotbarSwapC2S.CODEC,
         (payload, player) -> ServerInventoryHelper.swapHotbarRows(player, payload.previousRow(),
             payload.newRow()));
+    TroveNetworking.registerC2S(DurabilityReplaceC2S.ID, DurabilityReplaceC2S.CODEC,
+        (payload, player) -> ServerInventoryHelper.applyDurabilityReplace(player, payload.fromSlot(),
+            payload.targetSlot(), payload.similar()));
   }
 
   public record StackC2S(boolean fromPlayerInventory, long lockedMask) implements CustomPacketPayload {
@@ -96,6 +102,25 @@ public final class Networking {
         ByteBufCodecs.VAR_INT, HotbarSwapC2S::previousRow,
         ByteBufCodecs.VAR_INT, HotbarSwapC2S::newRow,
         HotbarSwapC2S::new);
+
+    @Override @NotNull public Type<? extends CustomPacketPayload> type() { return ID; }
+  }
+
+  /**
+   * A client-driven auto-replace request: "swap the item in inventory slot {@code fromSlot} into my
+   * {@code targetSlot}". The client decides when an equipped item is about to break and which replacement
+   * to use (per its own config); the server re-validates the match using {@code similar} and performs the
+   * swap. No preference state is synced — everything the server needs rides in this per-event packet.
+   */
+  public record DurabilityReplaceC2S(int fromSlot, EquipmentSlot targetSlot, boolean similar)
+      implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<DurabilityReplaceC2S> ID =
+        new CustomPacketPayload.Type<>(DURABILITY_REPLACE_C2S);
+    public static final StreamCodec<RegistryFriendlyByteBuf, DurabilityReplaceC2S> CODEC = StreamCodec.composite(
+        ByteBufCodecs.VAR_INT, DurabilityReplaceC2S::fromSlot,
+        EquipmentSlot.STREAM_CODEC, DurabilityReplaceC2S::targetSlot,
+        ByteBufCodecs.BOOL, DurabilityReplaceC2S::similar,
+        DurabilityReplaceC2S::new);
 
     @Override @NotNull public Type<? extends CustomPacketPayload> type() { return ID; }
   }

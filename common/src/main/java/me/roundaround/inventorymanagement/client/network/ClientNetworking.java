@@ -5,6 +5,7 @@ import me.roundaround.inventorymanagement.config.InventoryManagementConfig;
 import me.roundaround.inventorymanagement.inventory.IgnoredSlots;
 import me.roundaround.inventorymanagement.network.Networking;
 import me.roundaround.trove.network.TroveNetworking;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.List;
@@ -46,5 +47,14 @@ public final class ClientNetworking {
 
   public static void sendHotbarSwap(int previousRow, int newRow) {
     TroveNetworking.sendToServer(new Networking.HotbarSwapC2S(previousRow, newRow));
+  }
+
+  /**
+   * Requests the server swap the replacement at inventory {@code fromSlot} into {@code targetSlot} for the
+   * client-driven auto-replace feature. The client has already decided (per its own config) that the item
+   * in {@code targetSlot} is about to break and that this is a valid replacement; the server re-validates.
+   */
+  public static void sendDurabilityReplace(int fromSlot, EquipmentSlot targetSlot, boolean similar) {
+    TroveNetworking.sendToServer(new Networking.DurabilityReplaceC2S(fromSlot, targetSlot, similar));
   }
 }

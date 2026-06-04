@@ -109,6 +109,36 @@ public class InventoryManagementConfig extends ModConfigImpl implements GameScop
    */
   public BooleanConfigOption hotbarSwapNumberKeys;
 
+  // ----- Item Durability group ("durability") -----
+
+  /** Master toggle for the client-side low-durability alert (action bar message + anvil ping). */
+  public BooleanConfigOption durabilityAlertEnabled;
+
+  /**
+   * Percent-of-max durability thresholds (1-99) that trigger a low-durability alert, fired once each
+   * as durability crosses them downward. File-edited like {@link #lockedPlayerSlots}; no GUI control.
+   */
+  public IntListConfigOption durabilityAlertThresholds;
+
+  /** Whether to also fire a low-durability alert at exactly 1 durability point remaining. */
+  public BooleanConfigOption durabilityAlertAtOne;
+
+  /** Whether the low-durability alert plays the anvil "ping" sound (the action-bar message always shows). */
+  public BooleanConfigOption durabilityAlertSound;
+
+  /**
+   * Auto-replace a held/worn item right before it breaks. Client-driven: the client detects the imminent
+   * break and requests the swap; the server validates and applies it (so the mod must be on the server in
+   * multiplayer). No preference is synced. Default off.
+   */
+  public BooleanConfigOption durabilityAutoReplace;
+
+  /**
+   * Relax auto-replace matching from strict (same item + enchantments) to similar (same category,
+   * ignoring material/enchantments). Default off.
+   */
+  public BooleanConfigOption durabilityAutoReplaceSimilar;
+
   public InventoryManagementConfig() {
     super(Constants.MOD_ID);
   }
@@ -216,6 +246,48 @@ public class InventoryManagementConfig extends ModConfigImpl implements GameScop
         .setComment(
             "While holding the hotbar-swap key, let number keys 1-3 select a row to swap into the hotbar.")
         .build()).clientOnly().commit();
+
+    // ----- Item Durability group -----
+
+    this.durabilityAlertEnabled = this.buildRegistration(BooleanConfigOption.builder(ConfigPath.of(
+        "durability", "durabilityAlertEnabled"))
+        .setDefaultValue(true)
+        .setComment(
+            "Show a low-durability action-bar alert (and anvil ping) when a tool or equipped item drops past a threshold.")
+        .build()).clientOnly().commit();
+
+    this.durabilityAlertThresholds = this.buildRegistration(IntListConfigOption.builder(ConfigPath.of(
+        "durability", "durabilityAlertThresholds"))
+        .setDefaultValue(List.of(10, 5))
+        .setComment(
+            "Percent-of-max durability thresholds (1-99) that trigger a low-durability alert; each fires once as durability crosses it downward. File-edited; no GUI control.")
+        .build()).clientOnly().noGuiControl().commit();
+
+    this.durabilityAlertAtOne = this.buildRegistration(BooleanConfigOption.builder(ConfigPath.of(
+        "durability", "durabilityAlertAtOne"))
+        .setDefaultValue(true)
+        .setComment("Also fire a low-durability alert at exactly 1 durability point remaining.")
+        .build()).clientOnly().commit();
+
+    this.durabilityAlertSound = this.buildRegistration(BooleanConfigOption.builder(ConfigPath.of(
+        "durability", "durabilityAlertSound"))
+        .setDefaultValue(true)
+        .setComment("Play the anvil ping sound with the low-durability alert (the action-bar message always shows).")
+        .build()).clientOnly().commit();
+
+    this.durabilityAutoReplace = this.buildRegistration(BooleanConfigOption.builder(ConfigPath.of(
+        "durability", "durabilityAutoReplace"))
+        .setDefaultValue(false)
+        .setComment(
+            "Right before a held/worn item breaks, swap in a matching replacement from your inventory. Requires the mod on the server in multiplayer.")
+        .build()).clientOnly().commit();
+
+    this.durabilityAutoReplaceSimilar = this.buildRegistration(BooleanConfigOption.builder(ConfigPath.of(
+        "durability", "durabilityAutoReplaceSimilar"))
+        .setDefaultValue(false)
+        .setComment(
+            "Relax auto-replace matching from strict (same item + enchantments) to similar (same category, ignoring material/enchantments).")
+        .build()).clientOnly().commit();
   }
 
   /**
@@ -272,6 +344,17 @@ public class InventoryManagementConfig extends ModConfigImpl implements GameScop
       return LockedSlotDisplay.getDefault();
     }
     return this.lockedSlotDisplay.getValue();
+  }
+
+  /**
+   * The configured percent-of-max durability alert thresholds, guarded against pre-init access (returns
+   * an empty list before the config is initialized). Mirrors {@link #getLockedPlayerSlots()}.
+   */
+  public List<Integer> getDurabilityAlertThresholds() {
+    if (!this.isInitialized() || this.durabilityAlertThresholds == null) {
+      return List.of();
+    }
+    return this.durabilityAlertThresholds.getValue();
   }
 
   /**

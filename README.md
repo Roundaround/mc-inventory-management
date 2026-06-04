@@ -48,6 +48,20 @@ You can configure the behavior of the mod from the `inventorymanagement.toml` fi
 
 `hotbarSwapNumberKeys`: `true|false` (default `true`) - While holding the **Hotbar swap (hold)** key binding, let number keys `1`-`3` select a main-inventory row to swap into the hotbar (and re-pressing the active row's number swaps it back). On by default; turn it off to keep number keys changing your selected hotbar slot even while the key is held. Scrolling with the key held always works regardless. See [Hotbar swapping](#hotbar-swapping) below.
 
+**Item durability** (under the `durability` section)
+
+`durability.durabilityAlertEnabled`: `true|false` (default `true`) - Show a low-durability action-bar alert (with an anvil "ping") when a tool or equipped item drops past a threshold. Purely client-side — it reads durability that's already synced to you, so it works on any server, even vanilla. See [Item durability](#item-durability) below.
+
+`durability.durabilityAlertThresholds`: `[<Integer>, …]` (default `[10, 5]`) - Percent-of-max durability values (`1`-`99`) that trigger the alert; each fires once as durability crosses it downward. File-edited, no GUI control.
+
+`durability.durabilityAlertAtOne`: `true|false` (default `true`) - Also fire the alert at exactly `1` durability point remaining, in addition to the percentage thresholds.
+
+`durability.durabilityAlertSound`: `true|false` (default `true`) - Play the anvil ping sound with the alert. The action-bar message always shows regardless.
+
+`durability.durabilityAutoReplace`: `true|false` (default `false`) - Right before a held or worn item breaks, swap in a matching replacement from your inventory. Client-driven: your client detects the imminent break and requests the swap, so the mod must be installed on the server in multiplayer (no settings are synced).
+
+`durability.durabilityAutoReplaceSimilar`: `true|false` (default `false`) - Relax auto-replace matching from strict (same item + enchantments) to similar (same category, ignoring material/enchantments): any glider for a glider, any item for the same armor slot, any item sharing the broken tool's tool tag (`#minecraft:pickaxes`, `axes`, `shovels`, `hoes`, `swords`).
+
 **Button position**
 
 `defaultPosition`: `"(<Integer>,<Integer>)"` - Customize a default for button position.
@@ -129,6 +143,20 @@ If you ever get out of sync — for example after quitting the game mid-swap —
 > **Note:** because the items physically swap places (and the server saves them), quitting while a row is swapped in leaves those items displaced when you log back in, even though the indicator shows "normal". To put everything home, re-select that row (scroll or number-key it back in) and then scroll back to normal.
 
 > **Tip:** like all of Inventory Management's key bindings, both **Hotbar swap (hold)** and **Reset hotbar swap** are unbound by default. Assign them under Options → Controls in the **Inventory Management** category to use this feature.
+
+---
+
+## Item durability
+
+Tired of losing a hard-won tool because you didn't notice it was about to break? The **Item Durability** options give you two independent ways to look after your gear. Each is toggled separately in the config; the alert is on by default and auto-replace is off by default.
+
+**Low-durability alert.** When a tool or equipped item (including an elytra) drops past a threshold, you get an action-bar message — *"\<item\> durability low! \<remaining\> of \<max\> remaining"* — and an anvil "ping". There are two configurable percentage thresholds (default **10%** and **5%**), each firing once as durability crosses it downward, plus a separate **alert at 1 remaining** option for that final point. This is purely client-side: it reads durability that's already synced to you, so it works on **any** server, even vanilla. Turn off the sound with `durabilityAlertSound` if you only want the message; edit the percentages in the `durabilityAlertThresholds` config list.
+
+**Auto-replace before break.** Right before a held or worn item would break, the mod swaps in a matching replacement from your inventory — the worn-out item lands back in the slot the replacement came from, so you barely skip a beat and never lose the old one mid-action. By default the match is **strict** — same item, same enchantments — but `durabilityAutoReplaceSimilar` relaxes it to **similar**: any glider for a glider, any piece for the same armor slot, or any tool sharing the broken one's category (pickaxe, axe, shovel, hoe, sword). The replacement with the most remaining durability wins.
+
+**Multiplayer.** Auto-replace is **client-driven**: your client (which already sees your gear's durability) notices an item is about to break, picks the replacement, and asks the server to perform the swap — exactly how the sort/transfer buttons work. Nothing about your settings is synced; the request carries everything the server needs. The mod must be installed **on the server** in multiplayer for the swap to happen (the server validates and applies it). The alert is purely client-side and needs nothing on the server.
+
+For the full option list and the technical details, see [`DURABILITY.md`](DURABILITY.md).
 
 ---
 

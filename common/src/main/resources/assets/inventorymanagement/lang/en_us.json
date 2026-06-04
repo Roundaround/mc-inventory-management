@@ -79,5 +79,19 @@
   "inventorymanagement.grouping.spawn_eggs.label": "Spawn eggs",
   "inventorymanagement.grouping.pottery_sherds.label": "Pottery sherds",
   "inventorymanagement.grouping.horse_armor.label": "Horse armor",
-  "inventorymanagement.grouping.coral.label": "Coral"
+  "inventorymanagement.grouping.coral.label": "Coral",
+  "inventorymanagement.durability.title": "Item Durability",
+  "inventorymanagement.durability.durabilityAlertEnabled.label": "Low-durability alert",
+  "inventorymanagement.durability.durabilityAlertEnabled.tooltip": "Show an action-bar message (and anvil ping) when a tool or equipped item drops past a low-durability threshold. Works on any server.",
+  "inventorymanagement.durability.durabilityAlertThresholds.label": "Alert thresholds",
+  "inventorymanagement.durability.durabilityAlertThresholds.tooltip": "Percent-of-max durability values (1-99) that trigger the alert; each fires once as durability crosses it downward. Defaults to 10 and 5. File-edited; no GUI control.",
+  "inventorymanagement.durability.durabilityAlertAtOne.label": "Alert at 1 remaining",
+  "inventorymanagement.durability.durabilityAlertAtOne.tooltip": "Also fire the low-durability alert at exactly 1 durability point remaining, in addition to the percentage thresholds.",
+  "inventorymanagement.durability.durabilityAlertSound.label": "Alert sound",
+  "inventorymanagement.durability.durabilityAlertSound.tooltip": "Play the anvil ping sound with the low-durability alert. The action-bar message always shows regardless.",
+  "inventorymanagement.durability.durabilityAutoReplace.label": "Auto-replace before break",
+  "inventorymanagement.durability.durabilityAutoReplace.tooltip": "When a held or worn item breaks, swap in a matching replacement from your inventory. Requires the mod on the server in multiplayer.",
+  "inventorymanagement.durability.durabilityAutoReplaceSimilar.label": "Auto-replace with similar items",
+  "inventorymanagement.durability.durabilityAutoReplaceSimilar.tooltip": "Relax auto-replace matching from strict (same item and enchantments) to similar (same category, ignoring material and enchantments).",
+  "inventorymanagement.durability.alert": "%s durability low! %s of %s remaining"
 }

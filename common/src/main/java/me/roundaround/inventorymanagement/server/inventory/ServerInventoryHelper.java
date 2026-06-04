@@ -1,9 +1,12 @@
 package me.roundaround.inventorymanagement.server.inventory;
 
+import me.roundaround.inventorymanagement.durability.DurabilityReplace;
 import me.roundaround.inventorymanagement.inventory.IgnoredSlots;
 import me.roundaround.inventorymanagement.inventory.SlotRange;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.Container;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.HorseInventoryMenu;
 import net.minecraft.world.item.ItemStack;
@@ -282,5 +285,51 @@ public final class ServerInventoryHelper {
         }
       }
     }
+  }
+
+  /**
+   * Auto-replace (client-driven): swap the about-to-break item in {@code targetSlot} with the replacement
+   * the client picked at inventory {@code fromSlot}. The request is re-validated server-side so a bad/stale
+   * request is a no-op rather than an exploit: {@code fromSlot} must be a real inventory slot, the target
+   * item must be damageable and actually about to break, the replacement must {@link DurabilityReplace#matches}
+   * the target (honoring {@code similar}), and an armor target only accepts an item equippable there. It is a
+   * pure two-slot exchange, so it can never duplicate or lose items.
+   */
+  public static void applyDurabilityReplace(Player player, int fromSlot, EquipmentSlot targetSlot, boolean similar) {
+    Inventory inventory = player.getInventory();
+
+    if ((fromSlot < 0 || fromSlot >= 36) && fromSlot != Inventory.SLOT_OFFHAND) {
+      return;
+    }
+    if (fromSlot == backingInventorySlot(player, targetSlot)) {
+      return;
+    }
+
+    ItemStack replacement = inventory.getItem(fromSlot);
+    ItemStack current = player.getItemBySlot(targetSlot);
+    if (replacement.isEmpty() || current.isEmpty()) {
+      return;
+    }
+    if (!current.isDamageableItem() || !current.nextDamageWillBreak()) {
+      return;
+    }
+    if (!DurabilityReplace.matches(player, current, replacement, similar)) {
+      return;
+    }
+    if (targetSlot.isArmor() && player.getEquipmentSlotForItem(replacement) != targetSlot) {
+      return;
+    }
+
+    player.setItemSlot(targetSlot, replacement);
+    inventory.setItem(fromSlot, current);
+  }
+
+  /** The combined-inventory index that backs {@code slot} (selected hotbar slot / offhand), or -1 for armor. */
+  private static int backingInventorySlot(Player player, EquipmentSlot slot) {
+    return switch (slot) {
+      case MAINHAND -> player.getInventory().getSelectedSlot();
+      case OFFHAND -> Inventory.SLOT_OFFHAND;
+      default -> -1;
+    };
   }
 }

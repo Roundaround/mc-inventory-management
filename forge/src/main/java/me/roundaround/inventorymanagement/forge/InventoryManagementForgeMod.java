@@ -2,6 +2,7 @@ package me.roundaround.inventorymanagement.forge;
 
 import me.roundaround.inventorymanagement.api.sorting.DynamicTagGroups;
 import me.roundaround.inventorymanagement.api.sorting.GroupBootstrap;
+import me.roundaround.inventorymanagement.client.DurabilityClient;
 import me.roundaround.inventorymanagement.client.HotbarSwapClient;
 import me.roundaround.inventorymanagement.client.InventoryButtonsManager;
 import me.roundaround.inventorymanagement.client.InventoryManagementKeyMappings;
@@ -43,6 +44,7 @@ public final class InventoryManagementForgeMod {
                     ConfigControlRegister.init();
                     InventoryManagementKeyMappings.init();
                     HotbarSwapClient.init();
+                    DurabilityClient.init();
 
                     BuiltinResourcePack.register(
                             Constants.MOD_ID,
