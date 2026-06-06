@@ -109,4 +109,14 @@ public abstract class InventoryManagementButton extends Button {
     this.isHovered = false;
     this.setFocused(false);
   }
+
+  /**
+   * Bounds test against the button's last-rendered rectangle, independent of {@code active}/
+   * {@code visible} (unlike {@link #isMouseOver}). Used by the position editors to start a
+   * click-and-drag from anywhere on a button.
+   */
+  public boolean containsPoint(double mouseX, double mouseY) {
+    return mouseX >= this.getX() && mouseX < this.getX() + this.getWidth() && mouseY >= this.getY() &&
+        mouseY < this.getY() + this.getHeight();
+  }
 }

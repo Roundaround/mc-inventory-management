@@ -99,6 +99,16 @@ public class PerScreenPositionEditScreen extends AnywherePositionEditScreen {
   }
 
   @Override
+  protected boolean supportsDragging() {
+    return true;
+  }
+
+  @Override
+  protected boolean isInDraggableRegion(double mouseX, double mouseY) {
+    return this.buttons.stream().anyMatch((button) -> button.containsPoint(mouseX, mouseY));
+  }
+
+  @Override
   public void onClose() {
     super.onClose();
     InventoryManagementConfig.getInstance().writeToStore();

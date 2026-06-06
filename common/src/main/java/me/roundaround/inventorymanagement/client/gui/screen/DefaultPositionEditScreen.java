@@ -123,6 +123,21 @@ public class DefaultPositionEditScreen extends PositionEditScreen implements Scr
   }
 
   @Override
+  protected boolean supportsDragging() {
+    return true;
+  }
+
+  @Override
+  protected boolean isInDraggableRegion(double mouseX, double mouseY) {
+    return this.isOverAnyButton(this.containerButtons, mouseX, mouseY) ||
+        this.isOverAnyButton(this.playerButtons, mouseX, mouseY);
+  }
+
+  private boolean isOverAnyButton(LinkedList<InventoryManagementButton> buttons, double mouseX, double mouseY) {
+    return buttons.stream().anyMatch((button) -> button.containsPoint(mouseX, mouseY));
+  }
+
+  @Override
   protected void setValue(Position value) {
     super.setValue(value);
     this.refreshButtonPositions();
