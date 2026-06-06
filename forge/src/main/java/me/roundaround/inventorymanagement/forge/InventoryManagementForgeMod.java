@@ -8,6 +8,7 @@ import me.roundaround.inventorymanagement.client.InventoryButtonsManager;
 import me.roundaround.inventorymanagement.client.InventoryManagementKeyMappings;
 import me.roundaround.inventorymanagement.compat.trove.ConfigControlRegister;
 import me.roundaround.inventorymanagement.config.InventoryManagementConfig;
+import me.roundaround.inventorymanagement.config.InventoryManagementWorldConfig;
 import me.roundaround.inventorymanagement.generated.Constants;
 import me.roundaround.inventorymanagement.network.Networking;
 import me.roundaround.trove.forge.TroveForge;
@@ -40,6 +41,10 @@ public final class InventoryManagementForgeMod {
 
         FMLClientSetupEvent.getBus(context.getModBusGroup())
                 .addListener(event -> {
+                    // Client-only so single-player locks (world-scoped store) subscribe to the
+                    // world-dir lifecycle; a dedicated server never runs this, so it never writes a
+                    // stray per-world locks file.
+                    InventoryManagementWorldConfig.getInstance().init();
                     InventoryButtonsManager.INSTANCE.init();
                     ConfigControlRegister.init();
                     InventoryManagementKeyMappings.init();

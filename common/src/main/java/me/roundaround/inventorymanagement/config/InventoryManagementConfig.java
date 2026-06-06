@@ -5,11 +5,15 @@ import me.roundaround.inventorymanagement.generated.Constants;
 import me.roundaround.trove.config.ConfigPath;
 import me.roundaround.trove.config.manage.ModConfigImpl;
 import me.roundaround.trove.config.manage.store.GameScopedFileStore;
+import me.roundaround.trove.config.manage.store.WorldScopedFileStore;
 import me.roundaround.trove.config.option.BooleanConfigOption;
 import me.roundaround.trove.config.option.EnumConfigOption;
 import me.roundaround.trove.config.option.PositionConfigOption;
 import me.roundaround.trove.config.option.StringListConfigOption;
 import me.roundaround.trove.config.value.Position;
+import me.roundaround.trove.util.PathAccessor;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ServerData;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -86,12 +90,14 @@ public class InventoryManagementConfig extends ModConfigImpl implements GameScop
   public StringListConfigOption disabledDynamicGroups;
 
   /**
-   * Absolute player main-inventory slot indices the user has locked. Locked slots are excluded from
-   * sort, auto-stack, and transfer-all (both directions). Client-only and stateless on the server:
-   * the list rides along inside each operation packet. Managed programmatically via
-   * {@link #toggleLockedPlayerSlot(int)}; no GUI control.
+   * Per-multiplayer-server locked player main-inventory slots, keyed by server address. Single-player
+   * locks live per-save in {@link InventoryManagementWorldConfig} instead; {@link #getLockedPlayerSlots()}
+   * and {@link #toggleLockedPlayerSlot(int)} route between the two by connected-world context. Locked
+   * slots are excluded from sort, auto-stack, and transfer-all (both directions). Client-only and
+   * stateless on the server: the list rides along inside each operation packet. Managed
+   * programmatically; no GUI control.
    */
-  public IntListConfigOption lockedPlayerSlots;
+  public ServerLockedSlotsConfigOption serverLockedPlayerSlots;
 
   /**
    * When the locked-slot marker (darkened background + border under the item) is drawn. Defaults to
@@ -116,7 +122,7 @@ public class InventoryManagementConfig extends ModConfigImpl implements GameScop
 
   /**
    * Percent-of-max durability thresholds (1-99) that trigger a low-durability alert, fired once each
-   * as durability crosses them downward. File-edited like {@link #lockedPlayerSlots}; no GUI control.
+   * as durability crosses them downward. File-edited; no GUI control.
    */
   public IntListConfigOption durabilityAlertThresholds;
 
@@ -228,9 +234,10 @@ public class InventoryManagementConfig extends ModConfigImpl implements GameScop
         .setComment("Customize button position on a per-screen basis.")
         .build()).clientOnly().noGuiControl().commit();
 
-    this.lockedPlayerSlots = this.buildRegistration(IntListConfigOption.builder(ConfigPath.of("lockedPlayerSlots"))
+    this.serverLockedPlayerSlots = this.buildRegistration(ServerLockedSlotsConfigOption.builder(ConfigPath.of(
+            "serverLockedPlayerSlots"))
         .setComment(
-            "Player main-inventory slot indices to lock from sorting, auto-stacking, and transfer-all. Managed programmatically; no GUI control.")
+            "Per-server locked player-inventory slot indices, keyed by server address. Single-player locks are stored per-save in the world config instead. Managed programmatically; no GUI control.")
         .build()).clientOnly().noGuiControl().commit();
 
     this.lockedSlotDisplay = this.buildRegistration(EnumConfigOption.builder(ConfigPath.of("lockedSlotDisplay"),
@@ -324,15 +331,22 @@ public class InventoryManagementConfig extends ModConfigImpl implements GameScop
   }
 
   /**
-   * The current set of locked player main-inventory slot indices. Returns the committed value, which
-   * is kept in lockstep with the pending value because {@link #toggleLockedPlayerSlot(int)} persists
-   * immediately. Returns an empty list before init.
+   * The current set of locked player main-inventory slot indices for wherever the player is right
+   * now: the per-save {@link InventoryManagementWorldConfig} in single-player, or this config's
+   * per-server {@link #serverLockedPlayerSlots} map (keyed by server address) on a multiplayer
+   * server. Returns an empty list before init, with no world loaded, or when the multiplayer server
+   * address is unavailable. The committed value tracks the pending one because
+   * {@link #toggleLockedPlayerSlot(int)} persists immediately.
    */
   public List<Integer> getLockedPlayerSlots() {
     if (!this.isInitialized()) {
       return List.of();
     }
-    return this.lockedPlayerSlots.getValue();
+    if (hostsWorld()) {
+      return InventoryManagementWorldConfig.getInstance().getLockedPlayerSlots();
+    }
+    String key = currentServerKey();
+    return key == null ? List.of() : this.serverLockedPlayerSlots.get(key);
   }
 
   /**
@@ -358,17 +372,47 @@ public class InventoryManagementConfig extends ModConfigImpl implements GameScop
   }
 
   /**
-   * Flips membership of {@code slot} in {@link #lockedPlayerSlots} and persists immediately. Intended
-   * for user-driven actions only (a single Ctrl+click), not high-frequency loops.
+   * Flips {@code slot}'s locked state for the current world: the per-save
+   * {@link InventoryManagementWorldConfig} in single-player, or this config's per-server
+   * {@link #serverLockedPlayerSlots} map on a multiplayer server (each persists immediately to its
+   * own store). No-op when the multiplayer server address is unavailable. Intended for user-driven
+   * actions only (a single Ctrl+click), not high-frequency loops.
    */
   public void toggleLockedPlayerSlot(int slot) {
-    List<Integer> current = new ArrayList<>(this.lockedPlayerSlots.getPendingValue());
-    if (current.contains(slot)) {
-      current.remove(Integer.valueOf(slot));
-    } else {
-      current.add(slot);
+    if (hostsWorld()) {
+      InventoryManagementWorldConfig.getInstance().toggleLockedPlayerSlot(slot);
+      return;
     }
-    this.lockedPlayerSlots.setValue(current);
+    String key = currentServerKey();
+    if (key == null) {
+      return;
+    }
+    this.serverLockedPlayerSlots.toggle(key, slot);
     this.writeToStore();
+  }
+
+  /**
+   * Whether we host the loaded world in-process — true single-player or the host of a LAN game — so
+   * the per-save {@link WorldScopedFileStore world store} is writable. Everything else (dedicated
+   * servers, direct-connect, LAN clients) is a remote connection that uses the per-server map. This
+   * is exactly the condition under which {@link InventoryManagementWorldConfig}'s store is ready, so
+   * the two never disagree.
+   */
+  private static boolean hostsWorld() {
+    return PathAccessor.get().isWorldDirAccessible();
+  }
+
+  /**
+   * Per-server lock map key for the connected server, or null if none (e.g. main menu, or a LAN
+   * world with no server entry). The server address is sanitized to a TOML-safe bare key
+   * (dots/colons → {@code _}), matching the convention {@link PerScreenPositionConfigOption} uses for
+   * its screen keys so the map serializes cleanly.
+   */
+  private static String currentServerKey() {
+    ServerData server = Minecraft.getInstance().getCurrentServer();
+    if (server == null || server.ip == null) {
+      return null;
+    }
+    return server.ip.replaceAll("[^A-Za-z0-9_-]", "_");
   }
 }

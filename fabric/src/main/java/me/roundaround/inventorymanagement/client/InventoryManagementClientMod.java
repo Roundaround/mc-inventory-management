@@ -2,6 +2,7 @@ package me.roundaround.inventorymanagement.client;
 
 import me.roundaround.allay.api.Entrypoint;
 import me.roundaround.inventorymanagement.compat.trove.ConfigControlRegister;
+import me.roundaround.inventorymanagement.config.InventoryManagementWorldConfig;
 import me.roundaround.inventorymanagement.generated.Constants;
 import me.roundaround.trove.resource.BuiltinResourcePack;
 import net.fabricmc.api.ClientModInitializer;
@@ -11,6 +12,9 @@ import net.minecraft.network.chat.Component;
 public class InventoryManagementClientMod implements ClientModInitializer {
   @Override
   public void onInitializeClient() {
+    // Client-only so single-player locks (world-scoped store) subscribe to the world-dir lifecycle;
+    // a dedicated server never runs this, so it never writes a stray per-world locks file.
+    InventoryManagementWorldConfig.getInstance().init();
     InventoryButtonsManager.INSTANCE.init();
     ConfigControlRegister.init();
     InventoryManagementKeyMappings.init();
