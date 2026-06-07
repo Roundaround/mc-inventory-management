@@ -19,6 +19,7 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -28,38 +29,37 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Client UI for the Locked Slots feature (PROPOSAL-1). A Ctrl+click on a player main-inventory slot
- * toggles its locked state in the client config; locked slots are marked with a slightly darkened
- * background and a border drawn <em>underneath</em> the item, plus a hover tooltip line. Locked state
- * is keyed by the absolute player-inventory index ({@link Slot#getContainerSlot()} for slots backed by
- * {@link Inventory}), matching the indices stored in the config and threaded into each operation packet.
- */
 @Mixin(AbstractContainerScreen.class)
 @MixinEnv(MixinEnv.Env.CLIENT)
 public abstract class SlotLockMixin {
-  // Locked-slot marker colors (ARGB), rendered under the item. Tweak freely.
+  @Unique
   private static final int INV_MGMT$LOCK_BG_TINT = 0x50000000;
+
+  @Unique
   private static final int INV_MGMT$LOCK_BORDER = 0x22FFFFFF;
-  private static final Component INV_MGMT$LOCK_TOOLTIP =
-      Component.translatable("inventorymanagement.tooltip.slot_locked");
+
+  @Unique
+  private static final Component INV_MGMT$LOCK_TOOLTIP = Component.translatable(
+      "inventorymanagement.tooltip.slot_locked");
 
   @Shadow
   @Nullable
   protected Slot hoveredSlot;
 
   @Shadow
-  protected abstract AbstractContainerMenu getMenu();
+  public abstract AbstractContainerMenu getMenu();
 
   @Shadow
   protected abstract List<Component> getTooltipFromContainerItem(ItemStack itemStack);
 
-  /**
-   * Ctrl+(left/right)-click on a lockable player main-inventory slot toggles its locked state and
-   * cancels the vanilla click so no item is picked up. Every other click falls through untouched.
-   */
-  @Inject(method = "mouseClicked(Lnet/minecraft/client/input/MouseButtonEvent;Z)Z", at = @At("HEAD"), cancellable = true)
-  private void invMgmt$toggleLockOnCtrlClick(MouseButtonEvent event, boolean doubleClick, CallbackInfoReturnable<Boolean> cir) {
+  @Inject(
+      method = "mouseClicked(Lnet/minecraft/client/input/MouseButtonEvent;Z)Z", at = @At("HEAD"), cancellable = true
+  )
+  private void invMgmt$toggleLockOnCtrlClick(
+      MouseButtonEvent event,
+      boolean doubleClick,
+      CallbackInfoReturnable<Boolean> cir
+  ) {
     if (!Minecraft.getInstance().hasControlDown()) {
       return;
     }
@@ -131,7 +131,11 @@ public abstract class SlotLockMixin {
    * does not also fire. Queued before vanilla runs ({@code extractTooltip} is called after
    * {@code extractContents} in {@code extractRenderState}), so it becomes the frame's deferred tooltip.
    */
-  @Inject(method = "extractTooltip(Lnet/minecraft/client/gui/GuiGraphicsExtractor;II)V", at = @At("HEAD"), cancellable = true)
+  @Inject(
+      method = "extractTooltip(Lnet/minecraft/client/gui/GuiGraphicsExtractor;II)V",
+      at = @At("HEAD"),
+      cancellable = true
+  )
   private void invMgmt$appendLockTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY, CallbackInfo ci) {
     Slot slot = this.hoveredSlot;
     if (slot == null || !(slot.container instanceof Inventory) || !IgnoredSlots.isLockable(slot.getContainerSlot())) {

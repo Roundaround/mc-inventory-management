@@ -2,7 +2,7 @@ package me.roundaround.inventorymanagement.client.gui;
 
 import me.roundaround.inventorymanagement.client.gui.screen.PerScreenPositionEditScreen;
 import me.roundaround.inventorymanagement.client.gui.screen.ScreenPositioner;
-import me.roundaround.inventorymanagement.mixin.HandledScreenAccessor;
+import me.roundaround.inventorymanagement.mixin.AbstractContainerScreenAccessor;
 import me.roundaround.inventorymanagement.mixin.ScreenAccessor;
 import me.roundaround.trove.client.gui.util.GuiUtil;
 import me.roundaround.trove.config.value.Position;
@@ -39,8 +39,8 @@ public abstract class InventoryManagementButton extends Button {
       WidgetSprites textures
   ) {
     super(
-        ((HandledScreenAccessor) parent).getX() + ((HandledScreenAccessor) parent).getBackgroundWidth() + offset.x(),
-        ((HandledScreenAccessor) parent).getY() + referenceSlot.y + offset.y(),
+        ((AbstractContainerScreenAccessor) parent).getX() + ((AbstractContainerScreenAccessor) parent).getBackgroundWidth() + offset.x(),
+        ((AbstractContainerScreenAccessor) parent).getY() + referenceSlot.y + offset.y(),
         WIDTH,
         HEIGHT,
         CommonComponents.EMPTY,

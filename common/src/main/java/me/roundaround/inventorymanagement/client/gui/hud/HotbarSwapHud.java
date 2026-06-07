@@ -7,18 +7,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 
-/**
- * Hotbar swapping — in-game HUD indicator. When a row is swapped into the hotbar, draws a small,
- * unobtrusive badge to the left of the hotbar showing which main-inventory row (1-3) is currently
- * displaced. Gated on the config being initialized and {@code modEnabled}, a live player, and a
- * non-zero swapped row.
- */
 public final class HotbarSwapHud {
-  // Hotbar geometry: the vanilla hotbar is 182px wide, centered, flush with the bottom.
   private static final int HOTBAR_HALF_WIDTH = 91;
   private static final int HOTBAR_HEIGHT = 22;
 
-  // Badge geometry.
   private static final int BADGE_WIDTH = 11;
   private static final int BADGE_HEIGHT = 13;
   private static final int BADGE_GAP = 3;
@@ -52,7 +44,6 @@ public final class HotbarSwapHud {
     int hotbarLeft = centerX - HOTBAR_HALF_WIDTH;
     int hotbarTop = graphics.guiHeight() - HOTBAR_HEIGHT;
 
-    // Badge sits just left of the hotbar, vertically aligned with it.
     int badgeRight = hotbarLeft - BADGE_GAP;
     int badgeLeft = badgeRight - BADGE_WIDTH;
     int badgeTop = hotbarTop + (HOTBAR_HEIGHT - BADGE_HEIGHT) / 2;

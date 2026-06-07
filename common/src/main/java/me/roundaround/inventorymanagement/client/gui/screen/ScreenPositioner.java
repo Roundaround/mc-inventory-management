@@ -1,6 +1,6 @@
 package me.roundaround.inventorymanagement.client.gui.screen;
 
-import me.roundaround.inventorymanagement.mixin.HandledScreenAccessor;
+import me.roundaround.inventorymanagement.mixin.AbstractContainerScreenAccessor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 
 public interface ScreenPositioner {
@@ -11,10 +11,10 @@ public interface ScreenPositioner {
   int getBackgroundWidth();
 
   class HandledScreenWrapper implements ScreenPositioner {
-    private final HandledScreenAccessor reference;
+    private final AbstractContainerScreenAccessor reference;
 
     public HandledScreenWrapper(AbstractContainerScreen<?> reference) {
-      this.reference = (HandledScreenAccessor) reference;
+      this.reference = (AbstractContainerScreenAccessor) reference;
     }
 
     @Override
