@@ -11,6 +11,7 @@ import me.roundaround.inventorymanagement.config.InventoryManagementConfig;
 import me.roundaround.inventorymanagement.config.InventoryManagementWorldConfig;
 import me.roundaround.inventorymanagement.generated.Constants;
 import me.roundaround.inventorymanagement.network.Networking;
+import me.roundaround.trove.client.TroveHud;
 import me.roundaround.trove.forge.TroveForge;
 import me.roundaround.trove.resource.BuiltinResourcePack;
 import net.minecraft.network.chat.Component;
@@ -24,6 +25,9 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 public final class InventoryManagementForgeMod {
     public InventoryManagementForgeMod(FMLJavaModLoadingContext context) {
         TroveForge.bootstrap(context);
+        // Opt into Trove's HUD in the @Mod ctor (not the FMLClientSetupEvent listener below): the
+        // dispatcher must add its AddGuiOverlayLayersEvent listener during construction. No-op on server.
+        TroveHud.enable(Constants.MOD_ID);
         InventoryManagementConfig.getInstance().init();
         GroupBootstrap.init();
         Networking.register();

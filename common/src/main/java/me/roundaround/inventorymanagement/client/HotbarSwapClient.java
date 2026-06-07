@@ -4,8 +4,8 @@ import me.roundaround.inventorymanagement.client.gui.hud.HotbarSwapHud;
 import me.roundaround.inventorymanagement.client.network.ClientNetworking;
 import me.roundaround.inventorymanagement.config.InventoryManagementConfig;
 import me.roundaround.inventorymanagement.generated.Constants;
-import me.roundaround.trove.client.Hud;
 import me.roundaround.trove.client.KeyBindings;
+import me.roundaround.trove.client.TroveHud;
 import me.roundaround.trove.event.ClientLifecycle;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
@@ -119,7 +119,7 @@ public final class HotbarSwapClient {
     }
     initialized = true;
 
-    Hud.register(Identifier.fromNamespaceAndPath(Constants.MOD_ID, "hotbar_swap"), HotbarSwapHud::render);
+    TroveHud.register(Identifier.fromNamespaceAndPath(Constants.MOD_ID, "hotbar_swap"), HotbarSwapHud::render);
 
     ClientLifecycle.onTick(() -> {
       while (InventoryManagementKeyMappings.hotbarSwapReset.consumeClick()) {
