@@ -1,14 +1,10 @@
 package me.roundaround.inventorymanagement.client;
 
-import me.roundaround.inventorymanagement.client.gui.hud.HotbarSwapHud;
 import me.roundaround.inventorymanagement.client.network.ClientNetworking;
 import me.roundaround.inventorymanagement.config.InventoryManagementConfig;
-import me.roundaround.inventorymanagement.generated.Constants;
 import me.roundaround.trove.client.KeyBindings;
-import me.roundaround.trove.client.TroveHud;
 import me.roundaround.trove.event.ClientLifecycle;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.Identifier;
 
 /**
  * Central client-side state and actions for the Hotbar swapping feature.
@@ -110,16 +106,16 @@ public final class HotbarSwapClient {
   }
 
   /**
-   * Wire up the HUD indicator layer and the per-tick handling for the reset keybind and the
-   * disconnect re-baseline. Idempotent.
+   * Wire up the per-tick handling for the reset keybind and the disconnect re-baseline. Idempotent.
+   *
+   * <p>The in-game swapped-row badge is drawn by {@code HotbarSwapHudMixin} (a {@code
+   * Gui#extractItemHotbar} TAIL inject), not a HUD layer — see {@code HotbarSwapHud}.
    */
   public static void init() {
     if (initialized) {
       return;
     }
     initialized = true;
-
-    TroveHud.register(Identifier.fromNamespaceAndPath(Constants.MOD_ID, "hotbar_swap"), HotbarSwapHud::render);
 
     ClientLifecycle.onTick(() -> {
       while (InventoryManagementKeyMappings.hotbarSwapReset.consumeClick()) {
