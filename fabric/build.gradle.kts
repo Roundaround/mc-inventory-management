@@ -12,6 +12,10 @@ allay {
       required("fabric-api")
     }
   }
+
+  release {
+    loaders.set(listOf("fabric", "quilt"))
+  }
 }
 
 dependencies {

@@ -26,6 +26,7 @@ allay {
 
   release {
     versionType.set("release")
-    sourcesJar.set(true)
+    minecraftVersions("26.1".."26.1.2")
+    changelogDir.set(file("changelogs"))
   }
 }
