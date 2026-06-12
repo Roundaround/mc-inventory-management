@@ -12,6 +12,10 @@ allay {
   issues.set("https://github.com/Roundaround/mc-inventory-management/issues")
   logoFile.set("assets/inventorymanagement/banner.png")
 
+  gametest {
+    timeoutSeconds.set(10)
+  }
+
   modrinth {
     projectId.set("inventory-management")
   }

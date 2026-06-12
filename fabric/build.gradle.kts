@@ -19,6 +19,9 @@ dependencies {
   libBundle(libs.trove.fabric.core)
   libBundle(libs.trove.config.gui)
 
+  gametestImplementation(platform(libs.trove.bom))
+  gametestImplementation(libs.trove.fabric.gametest)
+
   testImplementation("org.junit.jupiter:junit-jupiter:5.11.4")
   testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
