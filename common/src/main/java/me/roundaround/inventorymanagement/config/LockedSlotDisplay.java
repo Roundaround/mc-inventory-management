@@ -29,7 +29,7 @@ public enum LockedSlotDisplay implements EnumValue<LockedSlotDisplay> {
 
   @Override
   public String getI18nKey(String modId) {
-    return modId + ".lockedSlotDisplay." + this.id;
+    return modId + ".sorting.lockedSlotDisplay." + this.id;
   }
 
   @Override

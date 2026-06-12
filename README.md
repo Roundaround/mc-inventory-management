@@ -36,31 +36,13 @@ You can configure the behavior of the mod from the `inventorymanagement.toml` fi
 
 `modEnabled`: `true|false` (default `true`) - Master switch for the mod. When off, no buttons are shown and no behavior runs.
 
-`showSort`: `true|false` (default `true`) - Whether to show the sort buttons.
+**Hotbar Swapping** (under the `hotbarSwap` section)
 
-`showTransfer`: `true|false` (default `true`) - Whether to show the transfer-all (place/take) buttons.
+`hotbarSwap.enableHotbarSwap`: `true|false` (default `true`) - Master toggle for hotbar swapping. When off, the **Hotbar swap (hold)** key binding does nothing (scrolling and number keys no longer swap a row in) and the swapped-row badge is hidden. See the Hotbar swapping section below.
 
-`showStack`: `true|false` (default `true`) - Whether to show the auto-stack buttons.
+`hotbarSwap.hotbarSwapNumberKeys`: `true|false` (default `true`) - While holding the **Hotbar swap (hold)** key binding, let number keys `1`-`3` select a main-inventory row to swap into the hotbar (and re-pressing the active row's number swaps it back). On by default; turn it off to keep number keys changing your selected hotbar slot even while the key is held. Scrolling with the key held always works regardless.
 
-**Sorting**
-
-`sortMode`: `"alphabetical"|"creative"` (default `"alphabetical"`) - How items are ordered when sorting. `alphabetical` sorts by item name; `creative` uses the creative-menu ordering.
-
-`containersFirst`: `true|false` (default `false`) - Place content-holding items (shulker boxes, bundles, etc.) before other items. Only applies in `alphabetical` mode.
-
-`itemGrouping`: `true|false` (default `true`) - Master toggle for variant grouping: cluster related families of items (all wool colors, all planks, and so on) together instead of sorting each variant purely by name. See the Item grouping section below.
-
-**Locked slots**
-
-`lockedSlotDisplay`: `"shown"|"hidden"|"hotkey"` (default `"shown"`) - When to draw the marker (border + darkened background) on locked slots. `shown` always draws it; `hidden` never does; `hotkey` only draws it while the **Peek locked slots** key binding is held. Locking itself (`Ctrl/Cmd`+click) and the hover tooltip are unaffected. See the Locked slots section below.
-
-`lockedPlayerSlots` / `serverLockedPlayerSlots`: (default empty) - The locked player main-inventory slot indices, remembered **per world**. In single-player they live in that save's own config file (`<save>/config/inventorymanagement.toml`) under `lockedPlayerSlots`, so they travel with the save; on a multiplayer server they live in your global config under `serverLockedPlayerSlots`, a table keyed by server address. Either way they're managed for you by `Ctrl/Cmd`+clicking slots in-game (no GUI control), but live in the config file if you need to inspect or clear them.
-
-**Hotbar swapping**
-
-`hotbarSwapNumberKeys`: `true|false` (default `true`) - While holding the **Hotbar swap (hold)** key binding, let number keys `1`-`3` select a main-inventory row to swap into the hotbar (and re-pressing the active row's number swaps it back). On by default; turn it off to keep number keys changing your selected hotbar slot even while the key is held. Scrolling with the key held always works regardless. See the Hotbar swapping section below.
-
-**Item durability** (under the `durability` section)
+**Item Durability** (under the `durability` section)
 
 `durability.durabilityAlertEnabled`: `true|false` (default `true`) - Show a low-durability action-bar alert (with an anvil "ping") when a tool or equipped item drops past a threshold. Purely client-side: it reads durability that's already synced to you, so it works on any server, even vanilla. See the Item durability section below.
 
@@ -74,23 +56,41 @@ You can configure the behavior of the mod from the `inventorymanagement.toml` fi
 
 `durability.durabilityAutoReplaceSimilar`: `true|false` (default `false`) - Relax auto-replace matching from strict (same item + enchantments) to similar (same category, ignoring material/enchantments): any glider for a glider, any item for the same armor slot, any item sharing the broken tool's tool tag (`#minecraft:pickaxes`, `axes`, `shovels`, `hoes`, `swords`).
 
-**Button position**
+**Sorting/Transfering** (under the `sorting` section)
 
-`defaultPosition`: `"(<Integer>,<Integer>)"` - Customize a default for button position.
+`sorting.showSort`: `true|false` (default `true`) - Whether to show the sort buttons.
 
-`screenPositions`: `{"ID": "(<Integer>,<Integer>)"}` - Customize button position on a per-screen basis. While this can be modified manually in the config file, the recommended way to modify this is through the configuration UI. See below!
+`sorting.showTransfer`: `true|false` (default `true`) - Whether to show the transfer-all (place/take) buttons.
 
-**Item grouping** (under the `grouping` section)
+`sorting.showStack`: `true|false` (default `true`) - Whether to show the auto-stack buttons.
 
-`grouping.<family>`: `true|false` (default `true`) - One toggle per built-in variant family; turn one off to sort that family by plain name instead of clustering it. Families: `wool`, `wool_carpets`, `beds`, `candles`, `banners`, `shulker_boxes`, `dyes`, `terracotta`, `glazed_terracotta`, `concrete`, `concrete_powder`, `stained_glass`, `stained_glass_pane`, `planks`, `wooden_slabs`, `wooden_stairs`, `wooden_doors`, `wooden_trapdoors`, `wooden_fences`, `fence_gates`, `signs`, `hanging_signs`, `leaves`, `saplings`, `boats`, `spawn_eggs`, `pottery_sherds`, `horse_armor`, `coral`.
+`sorting.sortMode`: `"alphabetical"|"creative"` (default `"alphabetical"`) - How items are ordered when sorting. `alphabetical` sorts by item name; `creative` uses the creative-menu ordering.
+
+`sorting.containersFirst`: `true|false` (default `false`) - Place content-holding items (shulker boxes, bundles, etc.) before other items. Only applies in `alphabetical` mode.
+
+`sorting.defaultPosition`: `"(<Integer>,<Integer>)"` - Customize a default for button position.
+
+`sorting.screenPositions`: `{"ID": "(<Integer>,<Integer>)"}` - Customize button position on a per-screen basis. While this can be modified manually in the config file, the recommended way to modify this is through the configuration UI. See below!
+
+`sorting.enableSlotLocking`: `true|false` (default `true`) - Master toggle for locking player-inventory slots. When off, `Ctrl/Cmd`+click no longer locks slots, no markers or tooltips are drawn, and locked slots are no longer skipped by sort, auto-stack, and transfer. Already-locked slots are remembered for when you turn it back on. See the Locked slots section below.
+
+`sorting.lockedSlotDisplay`: `"shown"|"hidden"|"hotkey"` (default `"shown"`) - When to draw the marker (border + darkened background) on locked slots. `shown` always draws it; `hidden` never does; `hotkey` only draws it while the **Peek locked slots** key binding is held. Locking itself (`Ctrl/Cmd`+click) and the hover tooltip are unaffected.
+
+`lockedPlayerSlots` / `sorting.serverLockedPlayerSlots`: (default empty) - The locked player main-inventory slot indices, remembered **per world**. In single-player they live in that save's own config file (`<save>/config/inventorymanagement.toml`) under `lockedPlayerSlots`, so they travel with the save; on a multiplayer server they live in your global config under `sorting.serverLockedPlayerSlots`, a table keyed by server address. Either way they're managed for you by `Ctrl/Cmd`+clicking slots in-game (no GUI control), but live in the config file if you need to inspect or clear them.
+
+**Sorting Groups** (under the `grouping` section)
+
+`grouping.itemGrouping`: `true|false` (default `true`) - Master toggle for variant grouping: cluster related families of items (all wool colors, all planks, and so on) together instead of sorting each variant purely by name. See the Item grouping section below.
 
 `grouping.dynamicGroups`: `true|false` (default `true`) - Master switch for datapack-defined grouping families (see the Datapack group tags section below).
 
 `grouping.disabledDynamicGroups`: `["<tag id>", ...]` (default empty) - Individually disabled datapack grouping families, by full tag id. Managed in the config file (no GUI control).
 
+`grouping.<family>`: `true|false` (default `true`) - One toggle per built-in variant family; turn one off to sort that family by plain name instead of clustering it. Families: `wool`, `wool_carpets`, `beds`, `candles`, `banners`, `shulker_boxes`, `dyes`, `terracotta`, `glazed_terracotta`, `concrete`, `concrete_powder`, `stained_glass`, `stained_glass_pane`, `planks`, `wooden_slabs`, `wooden_stairs`, `wooden_doors`, `wooden_trapdoors`, `wooden_fences`, `fence_gates`, `signs`, `hanging_signs`, `leaves`, `saplings`, `boats`, `spawn_eggs`, `pottery_sherds`, `horse_armor`, `coral`.
+
 ### Modifying the button positions
 
-In order to maintain compatibility with other mods, you can now adjust the positions of your inventory management buttons! To adjust the position for all buttons, check out the option in the config for `defaultPosition` or if you have ModMenu installed, in the config UI. If you have a particular screen that needs adjusted (maybe another mod added more inventory space, for example), you can hold `Ctrl/Cmd` and click on one of the UI buttons to open up the per-screen position editor! This editor will adjust the button positions for the current screen only, so you can tweak the positions all you want to get it aligned with your shiny backpack mod's UI! ;)
+In order to maintain compatibility with other mods, you can now adjust the positions of your inventory management buttons! To adjust the position for all buttons, check out the option in the config for `sorting.defaultPosition` or if you have ModMenu installed, in the config UI. If you have a particular screen that needs adjusted (maybe another mod added more inventory space, for example), you can hold `Ctrl/Cmd` and click on one of the UI buttons to open up the per-screen position editor! This editor will adjust the button positions for the current screen only, so you can tweak the positions all you want to get it aligned with your shiny backpack mod's UI! ;)
 
 Once the editor is open, **just click and drag the buttons** with your mouse to slide them into place, and they follow the cursor one-to-one. Prefer precision? The arrow keys still nudge them a pixel at a time (hold `Shift` for bigger jumps), and `Ctrl/Cmd`+`R` resets to the default. The same drag-and-drop works in the `defaultPosition` editor in the config UI.
 

@@ -175,110 +175,23 @@ public class InventoryManagementConfig extends ModConfigImpl implements GameScop
 
   @Override
   protected void registerOptions() {
+    // Global on/off switch, shown ungrouped at the top of the config screen.
     this.modEnabled = this.buildRegistration(BooleanConfigOption.builder(ConfigPath.of("modEnabled"))
         .setDefaultValue(true)
         .setComment("Simple toggle for the mod! Set to false to disable.")
         .build()).clientOnly().commit();
 
-    this.showSort = this.buildRegistration(BooleanConfigOption.builder(ConfigPath.of("showSort"))
-        .setDefaultValue(true)
-        .setComment("Whether to show sort buttons in the UI.")
-        .build()).clientOnly().commit();
+    // ----- Hotbar Swapping group ("hotbarSwap") -----
 
-    this.showTransfer = this.buildRegistration(BooleanConfigOption.builder(ConfigPath.of("showTransfer"))
-        .setDefaultValue(true)
-        .setComment("Whether to show transfer buttons in the UI.")
-        .build()).clientOnly().commit();
-
-    this.showStack = this.buildRegistration(BooleanConfigOption.builder(ConfigPath.of("showStack"))
-        .setDefaultValue(true)
-        .setComment("Whether to show auto-stack buttons in the UI.")
-        .build()).clientOnly().commit();
-
-    this.defaultPosition = this.buildRegistration(PositionConfigOption.builder(ConfigPath.of("defaultPosition"))
-        .setDefaultValue(new Position(-4, -1))
-        .setComment("Customize a default for button position.")
-        .onUpdate((option) -> option.setDisabled(
-            !this.showSort.getValue() && !this.showTransfer.getValue() && !this.showStack.getValue()))
-        .build()).clientOnly().commit();
-
-    this.sortMode = this.buildRegistration(EnumConfigOption.builder(ConfigPath.of("sortMode"),
-            List.of(SortMode.values()))
-        .setDefaultValue(SortMode.ALPHABETICAL)
-        .setComment(
-            "How items are ordered when sorting. 'alphabetical' sorts by item name; 'creative' uses creative-menu order.")
-        .build()).clientOnly().commit();
-
-    this.containersFirst = this.buildRegistration(BooleanConfigOption.builder(ConfigPath.of("containersFirst"))
-        .setDefaultValue(false)
-        .setComment(
-            "Place items that hold contents (shulker boxes, bundles, etc.) before other items. Only applies in 'alphabetical' sort mode.")
-        .build()).clientOnly().commit();
-
-    this.itemGrouping = this.buildRegistration(BooleanConfigOption.builder(ConfigPath.of("itemGrouping"))
-        .setDefaultValue(true)
-        .setComment(
-            "Group color/variant families of items together (e.g. all wool colors, all terracotta) instead of sorting each variant purely by name.")
-        .build()).clientOnly().commit();
-
-    this.dynamicGroupsEnabled = this.buildRegistration(BooleanConfigOption.builder(ConfigPath.of(
-        "grouping", "dynamicGroups"))
-        .setDefaultValue(true)
-        .setComment(
-            "Group items together based on datapack-defined item tags under the 'grouping/' folder (e.g. #mymod:grouping/gems). Master switch for all pack-defined grouping families.")
-        .build()).clientOnly().commit();
-
-    this.disabledDynamicGroups = this.buildRegistration(StringListConfigOption.builder(ConfigPath.of(
-        "grouping", "disabledDynamicGroups"))
-        .setComment(
-            "Individually disabled datapack grouping families, by full tag id (e.g. mymod:grouping/gems). Managed programmatically; no GUI control.")
-        .build()).clientOnly().noGuiControl().commit();
-
-    // Per-family grouping toggles, one default-true option per GroupDefs.ALL entry, all nested
-    // under the "grouping" group so they render as a single GUI section. Rebuilt every time
-    // registerOptions() runs (init + syncWithStore after clear()).
-    this.groupToggles.clear();
-    for (GroupDefs.GroupDef def : GroupDefs.ALL) {
-      this.groupToggles.put(def.id(), this.buildRegistration(BooleanConfigOption.builder(
-          ConfigPath.of("grouping", def.id()))
-          .setDefaultValue(true)
-          .setComment("Group " + def.displayName() + " variants together when sorting.")
-          .build()).clientOnly().commit());
-    }
-
-    this.screenPositions = this.buildRegistration(PerScreenPositionConfigOption.builder(ConfigPath.of(
-            "screenPositions"))
-        .setComment("Customize button position on a per-screen basis.")
-        .build()).clientOnly().noGuiControl().commit();
-
-    this.serverLockedPlayerSlots = this.buildRegistration(ServerLockedSlotsConfigOption.builder(ConfigPath.of(
-            "serverLockedPlayerSlots"))
-        .setComment(
-            "Per-server locked player-inventory slot indices, keyed by server address. Single-player locks are stored per-save in the world config instead. Managed programmatically; no GUI control.")
-        .build()).clientOnly().noGuiControl().commit();
-
-    this.enableSlotLocking = this.buildRegistration(BooleanConfigOption.builder(ConfigPath.of("enableSlotLocking"))
-        .setDefaultValue(true)
-        .setComment(
-            "Master toggle for locking player-inventory slots (Ctrl+click). When false, locking is disabled, no markers/tooltips are drawn, and locked slots are no longer skipped by sort/auto-stack/transfer. Stored locks are kept for when it is re-enabled.")
-        .build()).clientOnly().commit();
-
-    this.lockedSlotDisplay = this.buildRegistration(EnumConfigOption.builder(ConfigPath.of("lockedSlotDisplay"),
-            List.of(LockedSlotDisplay.values()))
-        .setDefaultValue(LockedSlotDisplay.getDefault())
-        .setComment(
-            "When to draw the locked-slot marker (border + darkened background). 'shown' always draws it; 'hidden' never does; 'hotkey' only while the 'Peek locked slots' keybind is held.")
-        .onUpdate((option) -> option.setDisabled(!this.enableSlotLocking.getValue()))
-        .build()).clientOnly().commit();
-
-    this.enableHotbarSwap = this.buildRegistration(BooleanConfigOption.builder(ConfigPath.of("enableHotbarSwap"))
+    this.enableHotbarSwap = this.buildRegistration(BooleanConfigOption.builder(ConfigPath.of(
+        "hotbarSwap", "enableHotbarSwap"))
         .setDefaultValue(true)
         .setComment(
             "Master toggle for hotbar swapping. When false, the hotbar-swap modifier keybind does nothing (scroll and number-key row selection are both inert) and the swapped-row badge is hidden.")
         .build()).clientOnly().commit();
 
     this.hotbarSwapNumberKeys = this.buildRegistration(BooleanConfigOption.builder(ConfigPath.of(
-        "hotbarSwapNumberKeys"))
+        "hotbarSwap", "hotbarSwapNumberKeys"))
         .setDefaultValue(true)
         .setComment(
             "While holding the hotbar-swap key, let number keys 1-3 select a row to swap into the hotbar.")
@@ -326,6 +239,104 @@ public class InventoryManagementConfig extends ModConfigImpl implements GameScop
         .setComment(
             "Relax auto-replace matching from strict (same item + enchantments) to similar (same category, ignoring material/enchantments).")
         .build()).clientOnly().commit();
+
+    // ----- Sorting/Transfering group ("sorting") -----
+
+    this.showSort = this.buildRegistration(BooleanConfigOption.builder(ConfigPath.of("sorting", "showSort"))
+        .setDefaultValue(true)
+        .setComment("Whether to show sort buttons in the UI.")
+        .build()).clientOnly().commit();
+
+    this.showTransfer = this.buildRegistration(BooleanConfigOption.builder(ConfigPath.of("sorting", "showTransfer"))
+        .setDefaultValue(true)
+        .setComment("Whether to show transfer buttons in the UI.")
+        .build()).clientOnly().commit();
+
+    this.showStack = this.buildRegistration(BooleanConfigOption.builder(ConfigPath.of("sorting", "showStack"))
+        .setDefaultValue(true)
+        .setComment("Whether to show auto-stack buttons in the UI.")
+        .build()).clientOnly().commit();
+
+    this.sortMode = this.buildRegistration(EnumConfigOption.builder(ConfigPath.of("sorting", "sortMode"),
+            List.of(SortMode.values()))
+        .setDefaultValue(SortMode.ALPHABETICAL)
+        .setComment(
+            "How items are ordered when sorting. 'alphabetical' sorts by item name; 'creative' uses creative-menu order.")
+        .build()).clientOnly().commit();
+
+    this.containersFirst = this.buildRegistration(BooleanConfigOption.builder(ConfigPath.of(
+            "sorting", "containersFirst"))
+        .setDefaultValue(false)
+        .setComment(
+            "Place items that hold contents (shulker boxes, bundles, etc.) before other items. Only applies in 'alphabetical' sort mode.")
+        .build()).clientOnly().commit();
+
+    this.defaultPosition = this.buildRegistration(PositionConfigOption.builder(ConfigPath.of(
+            "sorting", "defaultPosition"))
+        .setDefaultValue(new Position(-4, -1))
+        .setComment("Customize a default for button position.")
+        .onUpdate((option) -> option.setDisabled(
+            !this.showSort.getValue() && !this.showTransfer.getValue() && !this.showStack.getValue()))
+        .build()).clientOnly().commit();
+
+    this.screenPositions = this.buildRegistration(PerScreenPositionConfigOption.builder(ConfigPath.of(
+            "sorting", "screenPositions"))
+        .setComment("Customize button position on a per-screen basis.")
+        .build()).clientOnly().noGuiControl().commit();
+
+    this.enableSlotLocking = this.buildRegistration(BooleanConfigOption.builder(ConfigPath.of(
+            "sorting", "enableSlotLocking"))
+        .setDefaultValue(true)
+        .setComment(
+            "Master toggle for locking player-inventory slots (Ctrl+click). When false, locking is disabled, no markers/tooltips are drawn, and locked slots are no longer skipped by sort/auto-stack/transfer. Stored locks are kept for when it is re-enabled.")
+        .build()).clientOnly().commit();
+
+    this.lockedSlotDisplay = this.buildRegistration(EnumConfigOption.builder(ConfigPath.of(
+            "sorting", "lockedSlotDisplay"), List.of(LockedSlotDisplay.values()))
+        .setDefaultValue(LockedSlotDisplay.getDefault())
+        .setComment(
+            "When to draw the locked-slot marker (border + darkened background). 'shown' always draws it; 'hidden' never does; 'hotkey' only while the 'Peek locked slots' keybind is held.")
+        .onUpdate((option) -> option.setDisabled(!this.enableSlotLocking.getValue()))
+        .build()).clientOnly().commit();
+
+    this.serverLockedPlayerSlots = this.buildRegistration(ServerLockedSlotsConfigOption.builder(ConfigPath.of(
+            "sorting", "serverLockedPlayerSlots"))
+        .setComment(
+            "Per-server locked player-inventory slot indices, keyed by server address. Single-player locks are stored per-save in the world config instead. Managed programmatically; no GUI control.")
+        .build()).clientOnly().noGuiControl().commit();
+
+    // ----- Sorting Groups group ("grouping") -----
+
+    this.itemGrouping = this.buildRegistration(BooleanConfigOption.builder(ConfigPath.of("grouping", "itemGrouping"))
+        .setDefaultValue(true)
+        .setComment(
+            "Group color/variant families of items together (e.g. all wool colors, all terracotta) instead of sorting each variant purely by name.")
+        .build()).clientOnly().commit();
+
+    this.dynamicGroupsEnabled = this.buildRegistration(BooleanConfigOption.builder(ConfigPath.of(
+            "grouping", "dynamicGroups"))
+        .setDefaultValue(true)
+        .setComment(
+            "Group items together based on datapack-defined item tags under the 'grouping/' folder (e.g. #mymod:grouping/gems). Master switch for all pack-defined grouping families.")
+        .build()).clientOnly().commit();
+
+    this.disabledDynamicGroups = this.buildRegistration(StringListConfigOption.builder(ConfigPath.of(
+            "grouping", "disabledDynamicGroups"))
+        .setComment(
+            "Individually disabled datapack grouping families, by full tag id (e.g. mymod:grouping/gems). Managed programmatically; no GUI control.")
+        .build()).clientOnly().noGuiControl().commit();
+
+    // Per-family grouping toggles, one default-true option per GroupDefs.ALL entry, all nested
+    // under the "grouping" group so they render as a single GUI section. Rebuilt every time
+    // registerOptions() runs (init + syncWithStore after clear()).
+    this.groupToggles.clear();
+    for (GroupDefs.GroupDef def : GroupDefs.ALL) {
+      this.groupToggles.put(def.id(), this.buildRegistration(BooleanConfigOption.builder(
+              ConfigPath.of("grouping", def.id()))
+          .setDefaultValue(true)
+          .setComment("Group " + def.displayName() + " variants together when sorting.")
+          .build()).clientOnly().commit());
+    }
   }
 
   /**

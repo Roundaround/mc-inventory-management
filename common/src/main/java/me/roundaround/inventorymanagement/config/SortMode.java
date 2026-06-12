@@ -21,7 +21,7 @@ public enum SortMode implements EnumValue<SortMode> {
 
   @Override
   public String getI18nKey(String modId) {
-    return modId + ".sortMode." + this.id;
+    return modId + ".sorting.sortMode." + this.id;
   }
 
   @Override
