@@ -60,6 +60,9 @@ public abstract class SlotLockMixin {
       boolean doubleClick,
       CallbackInfoReturnable<Boolean> cir
   ) {
+    if (!InventoryManagementConfig.getInstance().isSlotLockingEnabled()) {
+      return;
+    }
     if (!Minecraft.getInstance().hasControlDown()) {
       return;
     }
@@ -118,6 +121,9 @@ public abstract class SlotLockMixin {
    * slots discoverable even when the marker is hidden.
    */
   private static boolean invMgmt$shouldRenderLockMarkers() {
+    if (!InventoryManagementConfig.getInstance().isSlotLockingEnabled()) {
+      return false;
+    }
     return switch (InventoryManagementConfig.getInstance().getLockedSlotDisplay()) {
       case SHOWN -> true;
       case HIDDEN -> false;
@@ -137,6 +143,9 @@ public abstract class SlotLockMixin {
       cancellable = true
   )
   private void invMgmt$appendLockTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY, CallbackInfo ci) {
+    if (!InventoryManagementConfig.getInstance().isSlotLockingEnabled()) {
+      return;
+    }
     Slot slot = this.hoveredSlot;
     if (slot == null || !(slot.container instanceof Inventory) || !IgnoredSlots.isLockable(slot.getContainerSlot())) {
       return;

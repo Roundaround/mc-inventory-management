@@ -33,7 +33,7 @@ public final class HotbarSwapHud {
     }
 
     InventoryManagementConfig config = InventoryManagementConfig.getInstance();
-    if (!config.isInitialized() || !config.modEnabled.getValue()) {
+    if (!config.isInitialized() || !config.modEnabled.getValue() || !config.enableHotbarSwap.getValue()) {
       return;
     }
 

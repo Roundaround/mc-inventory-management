@@ -100,18 +100,35 @@ public class InventoryManagementConfig extends ModConfigImpl implements GameScop
   public ServerLockedSlotsConfigOption serverLockedPlayerSlots;
 
   /**
+   * Master toggle for the Locked Slots feature. When off, Ctrl+click no longer locks/unlocks slots, no
+   * lock markers or tooltips are drawn, and previously-locked slots are no longer excluded from sort,
+   * auto-stack, or transfer-all. Stored locks are kept (not cleared), so re-enabling restores them.
+   * Gated centrally via {@link #isSlotLockingEnabled()}. Client-only.
+   */
+  public BooleanConfigOption enableSlotLocking;
+
+  /**
    * When the locked-slot marker (darkened background + border under the item) is drawn. Defaults to
    * {@link LockedSlotDisplay#SHOWN} — always visible; {@link LockedSlotDisplay#HOTKEY} restricts it to
    * while the "Peek locked slots" keybind is held. Rendered in the config GUI as an enum cycle control
-   * (registered in {@code ConfigControlRegister}). Does not affect locking itself or the hover tooltip;
-   * only the marker rendering in {@code SlotLockMixin}.
+   * (registered in {@code ConfigControlRegister}), and disabled there while {@link #enableSlotLocking}
+   * is off. Does not affect locking itself or the hover tooltip; only the marker rendering in
+   * {@code SlotLockMixin}.
    */
   public EnumConfigOption<LockedSlotDisplay> lockedSlotDisplay;
 
   /**
+   * Master toggle for the Hotbar swapping feature. When off, the modifier keybind does nothing — both
+   * the scroll and number-key row-selection paths are inert (gated in {@code HotbarSwapClient}) — and
+   * the swapped-row badge is hidden. Client-only.
+   */
+  public BooleanConfigOption enableHotbarSwap;
+
+  /**
    * Whether number keys 1-3 select a row to swap into the hotbar while the hotbar-swap modifier
    * keybind is held. Defaults off; scrolling with the modifier held always works regardless. When on,
-   * keys 4-9 are consumed (no hotbar slot change) while the modifier is held. Client-only.
+   * keys 4-9 are consumed (no hotbar slot change) while the modifier is held. Subordinate to
+   * {@link #enableHotbarSwap}, which disables it in the GUI when the feature is off. Client-only.
    */
   public BooleanConfigOption hotbarSwapNumberKeys;
 
@@ -240,11 +257,24 @@ public class InventoryManagementConfig extends ModConfigImpl implements GameScop
             "Per-server locked player-inventory slot indices, keyed by server address. Single-player locks are stored per-save in the world config instead. Managed programmatically; no GUI control.")
         .build()).clientOnly().noGuiControl().commit();
 
+    this.enableSlotLocking = this.buildRegistration(BooleanConfigOption.builder(ConfigPath.of("enableSlotLocking"))
+        .setDefaultValue(true)
+        .setComment(
+            "Master toggle for locking player-inventory slots (Ctrl+click). When false, locking is disabled, no markers/tooltips are drawn, and locked slots are no longer skipped by sort/auto-stack/transfer. Stored locks are kept for when it is re-enabled.")
+        .build()).clientOnly().commit();
+
     this.lockedSlotDisplay = this.buildRegistration(EnumConfigOption.builder(ConfigPath.of("lockedSlotDisplay"),
             List.of(LockedSlotDisplay.values()))
         .setDefaultValue(LockedSlotDisplay.getDefault())
         .setComment(
             "When to draw the locked-slot marker (border + darkened background). 'shown' always draws it; 'hidden' never does; 'hotkey' only while the 'Peek locked slots' keybind is held.")
+        .onUpdate((option) -> option.setDisabled(!this.enableSlotLocking.getValue()))
+        .build()).clientOnly().commit();
+
+    this.enableHotbarSwap = this.buildRegistration(BooleanConfigOption.builder(ConfigPath.of("enableHotbarSwap"))
+        .setDefaultValue(true)
+        .setComment(
+            "Master toggle for hotbar swapping. When false, the hotbar-swap modifier keybind does nothing (scroll and number-key row selection are both inert) and the swapped-row badge is hidden.")
         .build()).clientOnly().commit();
 
     this.hotbarSwapNumberKeys = this.buildRegistration(BooleanConfigOption.builder(ConfigPath.of(
@@ -252,6 +282,7 @@ public class InventoryManagementConfig extends ModConfigImpl implements GameScop
         .setDefaultValue(true)
         .setComment(
             "While holding the hotbar-swap key, let number keys 1-3 select a row to swap into the hotbar.")
+        .onUpdate((option) -> option.setDisabled(!this.enableHotbarSwap.getValue()))
         .build()).clientOnly().commit();
 
     // ----- Item Durability group -----
@@ -358,6 +389,16 @@ public class InventoryManagementConfig extends ModConfigImpl implements GameScop
       return LockedSlotDisplay.getDefault();
     }
     return this.lockedSlotDisplay.getValue();
+  }
+
+  /**
+   * Whether the Locked Slots feature is active, guarded against pre-init access (returns the default,
+   * {@code true}, before the config is initialized). The single gate for every locked-slot behavior:
+   * the Ctrl+click toggle and marker/tooltip rendering in {@code SlotLockMixin}, and the wire mask
+   * built in {@code ClientNetworking}. When false, stored locks are untouched but inert.
+   */
+  public boolean isSlotLockingEnabled() {
+    return !this.isInitialized() || this.enableSlotLocking == null || this.enableSlotLocking.getValue();
   }
 
   /**

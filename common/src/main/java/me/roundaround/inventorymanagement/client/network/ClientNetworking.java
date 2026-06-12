@@ -15,7 +15,11 @@ public final class ClientNetworking {
   }
 
   private static long lockedMask() {
-    return IgnoredSlots.maskOf(InventoryManagementConfig.getInstance().getLockedPlayerSlots());
+    InventoryManagementConfig config = InventoryManagementConfig.getInstance();
+    if (!config.isSlotLockingEnabled()) {
+      return 0L;
+    }
+    return IgnoredSlots.maskOf(config.getLockedPlayerSlots());
   }
 
   public static void sendStack(boolean fromPlayerInventory) {

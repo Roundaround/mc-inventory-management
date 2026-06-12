@@ -41,12 +41,13 @@ public final class HotbarSwapClient {
 
   /**
    * Whether the hotbar-swap modifier keybind is being held while the feature is usable: the config
-   * is initialized and {@code modEnabled}, and the local player exists. The scroll path additionally
-   * requires no screen to be open; callers needing that may also check
-   * {@code Minecraft.getInstance().screen == null}.
+   * is initialized, {@code modEnabled} and the {@code enableHotbarSwap} feature toggle are on, and the
+   * local player exists. The scroll path additionally requires no screen to be open; callers needing
+   * that may also check {@code Minecraft.getInstance().screen == null}. Gating here inerts both input
+   * paths (scroll and number keys) at once, so a disabled feature can never raise {@code swappedRow}.
    */
   public static boolean isModifierActive() {
-    if (!config().isInitialized() || !config().modEnabled.getValue()) {
+    if (!config().isInitialized() || !config().modEnabled.getValue() || !config().enableHotbarSwap.getValue()) {
       return false;
     }
     if (Minecraft.getInstance().player == null) {

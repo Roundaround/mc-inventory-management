@@ -10,7 +10,19 @@
 
 [![Support me on Ko-fi](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/compact/donate/kofi-singular-alt_vector.svg)](https://ko-fi.com/roundaround)
 
-Sort and transfer items with the click of a button. Adds several buttons to your inventory and containers that let you sort, transfer, and automatically stack your items! Works in single player by installing on your client, and in multiplayer by installing on both your client AND the server.
+Sort and transfer items with the click of a button, and a whole lot more. Inventory Management adds buttons to your inventory and containers that let you sort, transfer, and automatically stack your items, plus a handful of quality-of-life tools for keeping your inventory exactly how you want it. Works in single player by installing on your client, and in multiplayer by installing on both your client AND the server.
+
+**Features at a glance:**
+
+- **Sort** any container or your inventory with one click, alphabetically or in creative-menu order.
+- **Transfer all** to dump one inventory into another (place all or take all) in a single click.
+- **Auto-stack** to top up the matching stacks already in a container without disturbing anything else.
+- **Locked slots** you protect with `Ctrl/Cmd`+click, so sort, transfer, and stack all skip them.
+- **Hotbar swapping** to hold a key and scroll a whole main-inventory row into your hotbar on the fly.
+- **Item durability** alerts when gear runs low, plus optional auto-replace right before a tool breaks.
+- **Smart item grouping** that keeps variant families (all wool colors, all planks, and so on) together when sorting.
+
+Every feature can be turned on or off independently in the config, so you can run just the parts you want.
 
 ![](https://i.imgur.com/GadzOcM.png)
 
@@ -18,7 +30,7 @@ Sort and transfer items with the click of a button. Adds several buttons to your
 
 ### Configuration
 
-You can configure the behavior of the mod from the `inventorymanagement.toml` file within your config folder. If you have ModMenu installed, you can also access the configuration through the UI in ModMenu's mod list — each option shows a description tooltip when you hover it.
+You can configure the behavior of the mod from the `inventorymanagement.toml` file within your config folder. If you have ModMenu installed, you can also access the configuration through the UI in ModMenu's mod list, where each option shows a description tooltip when you hover it.
 
 **General**
 
@@ -36,23 +48,23 @@ You can configure the behavior of the mod from the `inventorymanagement.toml` fi
 
 `containersFirst`: `true|false` (default `false`) - Place content-holding items (shulker boxes, bundles, etc.) before other items. Only applies in `alphabetical` mode.
 
-`itemGrouping`: `true|false` (default `true`) - Master toggle for variant grouping: cluster related families of items (all wool colors, all planks, …) together instead of sorting each variant purely by name. See [Item grouping](#item-grouping) below.
+`itemGrouping`: `true|false` (default `true`) - Master toggle for variant grouping: cluster related families of items (all wool colors, all planks, and so on) together instead of sorting each variant purely by name. See the Item grouping section below.
 
 **Locked slots**
 
-`lockedSlotDisplay`: `"shown"|"hidden"|"hotkey"` (default `"shown"`) - When to draw the marker (border + darkened background) on locked slots. `shown` always draws it; `hidden` never does; `hotkey` only draws it while the **Peek locked slots** key binding is held. Locking itself (`Ctrl/Cmd`+click) and the hover tooltip are unaffected. See [Locked slots](#locked-slots) below.
+`lockedSlotDisplay`: `"shown"|"hidden"|"hotkey"` (default `"shown"`) - When to draw the marker (border + darkened background) on locked slots. `shown` always draws it; `hidden` never does; `hotkey` only draws it while the **Peek locked slots** key binding is held. Locking itself (`Ctrl/Cmd`+click) and the hover tooltip are unaffected. See the Locked slots section below.
 
 `lockedPlayerSlots` / `serverLockedPlayerSlots`: (default empty) - The locked player main-inventory slot indices, remembered **per world**. In single-player they live in that save's own config file (`<save>/config/inventorymanagement.toml`) under `lockedPlayerSlots`, so they travel with the save; on a multiplayer server they live in your global config under `serverLockedPlayerSlots`, a table keyed by server address. Either way they're managed for you by `Ctrl/Cmd`+clicking slots in-game (no GUI control), but live in the config file if you need to inspect or clear them.
 
 **Hotbar swapping**
 
-`hotbarSwapNumberKeys`: `true|false` (default `true`) - While holding the **Hotbar swap (hold)** key binding, let number keys `1`-`3` select a main-inventory row to swap into the hotbar (and re-pressing the active row's number swaps it back). On by default; turn it off to keep number keys changing your selected hotbar slot even while the key is held. Scrolling with the key held always works regardless. See [Hotbar swapping](#hotbar-swapping) below.
+`hotbarSwapNumberKeys`: `true|false` (default `true`) - While holding the **Hotbar swap (hold)** key binding, let number keys `1`-`3` select a main-inventory row to swap into the hotbar (and re-pressing the active row's number swaps it back). On by default; turn it off to keep number keys changing your selected hotbar slot even while the key is held. Scrolling with the key held always works regardless. See the Hotbar swapping section below.
 
 **Item durability** (under the `durability` section)
 
-`durability.durabilityAlertEnabled`: `true|false` (default `true`) - Show a low-durability action-bar alert (with an anvil "ping") when a tool or equipped item drops past a threshold. Purely client-side — it reads durability that's already synced to you, so it works on any server, even vanilla. See [Item durability](#item-durability) below.
+`durability.durabilityAlertEnabled`: `true|false` (default `true`) - Show a low-durability action-bar alert (with an anvil "ping") when a tool or equipped item drops past a threshold. Purely client-side: it reads durability that's already synced to you, so it works on any server, even vanilla. See the Item durability section below.
 
-`durability.durabilityAlertThresholds`: `[<Integer>, …]` (default `[10, 5]`) - Percent-of-max durability values (`1`-`99`) that trigger the alert; each fires once as durability crosses it downward. File-edited, no GUI control.
+`durability.durabilityAlertThresholds`: `[<Integer>, ...]` (default `[10, 5]`) - Percent-of-max durability values (`1`-`99`) that trigger the alert; each fires once as durability crosses it downward. File-edited, no GUI control.
 
 `durability.durabilityAlertAtOne`: `true|false` (default `true`) - Also fire the alert at exactly `1` durability point remaining, in addition to the percentage thresholds.
 
@@ -72,17 +84,17 @@ You can configure the behavior of the mod from the `inventorymanagement.toml` fi
 
 `grouping.<family>`: `true|false` (default `true`) - One toggle per built-in variant family; turn one off to sort that family by plain name instead of clustering it. Families: `wool`, `wool_carpets`, `beds`, `candles`, `banners`, `shulker_boxes`, `dyes`, `terracotta`, `glazed_terracotta`, `concrete`, `concrete_powder`, `stained_glass`, `stained_glass_pane`, `planks`, `wooden_slabs`, `wooden_stairs`, `wooden_doors`, `wooden_trapdoors`, `wooden_fences`, `fence_gates`, `signs`, `hanging_signs`, `leaves`, `saplings`, `boats`, `spawn_eggs`, `pottery_sherds`, `horse_armor`, `coral`.
 
-`grouping.dynamicGroups`: `true|false` (default `true`) - Master switch for datapack-defined grouping families (see [datapack group tags](#datapack-group-tags-no-code)).
+`grouping.dynamicGroups`: `true|false` (default `true`) - Master switch for datapack-defined grouping families (see the Datapack group tags section below).
 
-`grouping.disabledDynamicGroups`: `["<tag id>", …]` (default empty) - Individually disabled datapack grouping families, by full tag id. Managed in the config file (no GUI control).
+`grouping.disabledDynamicGroups`: `["<tag id>", ...]` (default empty) - Individually disabled datapack grouping families, by full tag id. Managed in the config file (no GUI control).
 
 ### Modifying the button positions
 
 In order to maintain compatibility with other mods, you can now adjust the positions of your inventory management buttons! To adjust the position for all buttons, check out the option in the config for `defaultPosition` or if you have ModMenu installed, in the config UI. If you have a particular screen that needs adjusted (maybe another mod added more inventory space, for example), you can hold `Ctrl/Cmd` and click on one of the UI buttons to open up the per-screen position editor! This editor will adjust the button positions for the current screen only, so you can tweak the positions all you want to get it aligned with your shiny backpack mod's UI! ;)
 
-Once the editor is open, **just click and drag the buttons** with your mouse to slide them into place — they follow the cursor one-to-one. Prefer precision? The arrow keys still nudge them a pixel at a time (hold `Shift` for bigger jumps), and `Ctrl/Cmd`+`R` resets to the default. The same drag-and-drop works in the `defaultPosition` editor in the config UI.
+Once the editor is open, **just click and drag the buttons** with your mouse to slide them into place, and they follow the cursor one-to-one. Prefer precision? The arrow keys still nudge them a pixel at a time (hold `Shift` for bigger jumps), and `Ctrl/Cmd`+`R` resets to the default. The same drag-and-drop works in the `defaultPosition` editor in the config UI.
 
-`Ctrl/Cmd`+click is the primary way in, but there are also dedicated key bindings to open the editor (one for the player inventory buttons, one for the container buttons). **All of Inventory Management's key bindings are unbound by default** — if you'd like to use them, assign keys under Options → Controls in the **Inventory Management** category.
+`Ctrl/Cmd`+click is the primary way in, but there are also dedicated key bindings to open the editor (one for the player inventory buttons, one for the container buttons). **All of Inventory Management's key bindings are unbound by default.** If you'd like to use them, assign keys in Options, then Controls, under the **Inventory Management** category.
 
 ---
 
@@ -122,68 +134,80 @@ Similar to the transfer all buttons, there will also be buttons for stacking int
 
 ## Locked slots
 
-Got a slot you never want disturbed — your spare blocks, food, or that one stack you keep in the same spot out of habit? **Lock it.** Hold `Ctrl/Cmd` and click any slot in your main inventory to toggle a lock on it. Locked slots are skipped by **sort**, **auto-stack**, and **transfer-all (place/take)**, so those operations will never move, reorder, or pull items out of a locked slot. Locking and unlocking is the same `Ctrl/Cmd`+click, and it works with either mouse button.
+![](https://raw.githubusercontent.com/Roundaround/mc-inventory-management/refs/heads/main/assets/screenshots/locked_slots.png)
 
-Only the main inventory grid is lockable — your hotbar, armor, off-hand, and any open container's slots aren't (the hotbar is already ignored by every operation anyway). Locks are remembered **per world** — each single-player save and each multiplayer server keeps its own set (single-player locks even travel inside the save folder) — and persist across sessions. An empty locked slot stays reserved: a transfer won't fill it.
+Got a slot you never want disturbed, like your spare blocks, food, or that one stack you keep in the same spot out of habit? **Lock it.** Hold `Ctrl/Cmd` and click any slot in your main inventory to toggle a lock on it. Locked slots are skipped by **sort**, **auto-stack**, and **transfer-all (place/take)**, so those operations will never move, reorder, or pull items out of a locked slot. Locking and unlocking is the same `Ctrl/Cmd`+click, and it works with either mouse button.
 
-By default a locked slot is marked with a subtle darkened background and a border drawn beneath the item, and hovering it shows a `Locked (Ctrl+click to unlock)` tooltip. Don't like the markers? The `lockedSlotDisplay` config option (see [Configuration](#configuration)) lets you set them to **Always shown** (default), **Hidden**, or **While hotkey held** — the last only draws them while you hold the **Peek locked slots** key binding, keeping your inventory clean until you want to check what's locked. The hover tooltip always shows regardless, so a locked slot is never a mystery.
+Only the main inventory grid is lockable. Your hotbar, armor, off-hand, and any open container's slots aren't (the hotbar is already ignored by every operation anyway). Locks are remembered **per world**: each single-player save and each multiplayer server keeps its own set (single-player locks even travel inside the save folder), and they persist across sessions. An empty locked slot stays reserved, so a transfer won't fill it.
 
-> **Tip:** like all of Inventory Management's key bindings, **Peek locked slots** is unbound by default. Assign it under Options → Controls in the **Inventory Management** category if you want to use the `hotkey` display mode.
+By default a locked slot is marked with a subtle darkened background and a border drawn beneath the item, and hovering it shows a `Locked (Ctrl+click to unlock)` tooltip. Don't like the markers? The `lockedSlotDisplay` config option lets you set them to **Always shown** (default), **Hidden**, or **While hotkey held**. That last one only draws them while you hold the **Peek locked slots** key binding, keeping your inventory clean until you want to check what's locked. The hover tooltip always shows regardless, so a locked slot is never a mystery.
+
+> **Tip:** like all of Inventory Management's key bindings, **Peek locked slots** is unbound by default. Assign it in Options, then Controls, under the **Inventory Management** category if you want to use the `hotkey` display mode.
 
 ---
 
 ## Hotbar swapping
 
-Want a second (or third) bar of items within thumb's reach without opening your inventory? **Hold the swap key and scroll.** Each scroll cycles which of your three main-inventory rows is exchanged with your hotbar: normal → row 1 → row 2 → row 3 → normal, wrapping around. The items physically swap places, so whatever was on your hotbar lands in that row and vice versa — only ever one row is displaced at a time, and scrolling back to normal puts everything home.
+![](https://raw.githubusercontent.com/Roundaround/mc-inventory-management/refs/heads/main/assets/screenshots/hotbar_swap.png)
 
-Prefer pressing a key over scrolling? With the `hotbarSwapNumberKeys` option on (the default — see [Configuration](#configuration)), while you hold the swap key, number keys `1`-`3` jump straight to that row; pressing the active row's number again swaps it back to normal. While the swap key is held the number keys won't change your selected hotbar slot, so `4`-`9` are simply ignored. Turn the option off if you'd rather number keys always behave normally even with the swap key held.
+Want a second (or third) bar of items within thumb's reach without opening your inventory? **Hold the swap key and scroll.** Each scroll cycles which of your three main-inventory rows is exchanged with your hotbar, stepping from normal to row 1 to row 2 to row 3 and back to normal, wrapping around. The items physically swap places, so whatever was on your hotbar lands in that row and vice versa. Only one row is ever displaced at a time, and scrolling back to normal puts everything home.
+
+Prefer pressing a key over scrolling? With the `hotbarSwapNumberKeys` option on (the default), while you hold the swap key, number keys `1`-`3` jump straight to that row; pressing the active row's number again swaps it back to normal. While the swap key is held the number keys won't change your selected hotbar slot, so `4`-`9` are simply ignored. Turn the option off if you'd rather number keys always behave normally even with the swap key held.
 
 A small marker shows which row is active: a colored tab to the left of the swapped row in any inventory/container screen, and an unobtrusive badge with the row number (`1`-`3`) just left of the hotbar on the in-game HUD.
 
-If you ever get out of sync — for example after quitting the game mid-swap — press the **Reset hotbar swap** key binding. It clears the mod's tracking back to "normal" **without moving any items**, re-baselining to whatever is physically on your hotbar right now.
+Behind the scenes, each swap exchanges a row's nine slots with the hotbar's nine, slot for slot, where row 1 is the top of the main grid and row 3 is the row nearest the hotbar. The movement happens server-side through a packet, the same way the sort button works, and switching rows always restores the previous one home before applying the new one. The server trusts the client's view of which row is currently out, so if the hotbar's contents change while a row is swapped in (an item breaks, a pickup lands there, a `/give`, another mod), the next swap can move the wrong slots. Scroll back to normal before doing anything that reshuffles a displaced hotbar.
+
+If you ever get out of sync, for example after quitting the game mid-swap, press the **Reset hotbar swap** key binding. It clears the mod's tracking back to "normal" **without moving any items**, re-baselining to whatever is physically on your hotbar right now.
 
 > **Note:** because the items physically swap places (and the server saves them), quitting while a row is swapped in leaves those items displaced when you log back in, even though the indicator shows "normal". To put everything home, re-select that row (scroll or number-key it back in) and then scroll back to normal.
 
-> **Tip:** like all of Inventory Management's key bindings, both **Hotbar swap (hold)** and **Reset hotbar swap** are unbound by default. Assign them under Options → Controls in the **Inventory Management** category to use this feature.
+> **Tip:** like all of Inventory Management's key bindings, both **Hotbar swap (hold)** and **Reset hotbar swap** are unbound by default. Assign them in Options, then Controls, under the **Inventory Management** category to use this feature.
 
 ---
 
 ## Item durability
 
+![](https://raw.githubusercontent.com/Roundaround/mc-inventory-management/refs/heads/main/assets/screenshots/durability.png)
+
 Tired of losing a hard-won tool because you didn't notice it was about to break? The **Item Durability** options give you two independent ways to look after your gear. Each is toggled separately in the config; the alert is on by default and auto-replace is off by default.
 
-**Low-durability alert.** When a tool or equipped item (including an elytra) drops past a threshold, you get an action-bar message — *"\<item\> durability low! \<remaining\> of \<max\> remaining"* — and an anvil "ping". There are two configurable percentage thresholds (default **10%** and **5%**), each firing once as durability crosses it downward, plus a separate **alert at 1 remaining** option for that final point. This is purely client-side: it reads durability that's already synced to you, so it works on **any** server, even vanilla. Turn off the sound with `durabilityAlertSound` if you only want the message; edit the percentages in the `durabilityAlertThresholds` config list.
+**Low-durability alert.** When a tool or equipped item (including an elytra) drops past a threshold, you get an action-bar message, *"\<item\> durability low! \<remaining\> of \<max\> remaining"*, along with an anvil "ping". It watches your main hand, off-hand, and all four armor slots, and fires once each time an item crosses a threshold on the way down, in the spirit of the Vanilla Tweaks "Durability Ping" datapack. There are two configurable percentage thresholds (default **10%** and **5%**), plus a separate **alert at 1 remaining** option for that final point. It's purely client-side: it reads durability that's already synced to you, so it works on **any** server, even vanilla. Turn off the sound with `durabilityAlertSound` if you only want the message, or edit the percentages in the `durabilityAlertThresholds` config list.
 
-**Auto-replace before break.** Right before a held or worn item would break, the mod swaps in a matching replacement from your inventory — the worn-out item lands back in the slot the replacement came from, so you barely skip a beat and never lose the old one mid-action. By default the match is **strict** — same item, same enchantments — but `durabilityAutoReplaceSimilar` relaxes it to **similar**: any glider for a glider, any piece for the same armor slot, or any tool sharing the broken one's category (pickaxe, axe, shovel, hoe, sword). The replacement with the most remaining durability wins.
+**Auto-replace before break.** Right before a held or worn item would break, the mod swaps in a matching replacement from your inventory. The worn-out item lands back in the slot the replacement came from, so you barely skip a beat and never lose the old one mid-action. By default the match is **strict** (same item, same enchantments), but `durabilityAutoReplaceSimilar` relaxes it to **similar**: any glider for a glider, any piece for the same armor slot, or any tool sharing the broken one's category (pickaxe, axe, shovel, hoe, sword). It scans your main inventory and off-hand and picks the candidate with the most remaining durability. Because it's only ever a two-slot swap, it can never duplicate or lose items.
 
-**Multiplayer.** Auto-replace is **client-driven**: your client (which already sees your gear's durability) notices an item is about to break, picks the replacement, and asks the server to perform the swap — exactly how the sort/transfer buttons work. Nothing about your settings is synced; the request carries everything the server needs. The mod must be installed **on the server** in multiplayer for the swap to happen (the server validates and applies it). The alert is purely client-side and needs nothing on the server.
+One thing to know: auto-replace kicks in at an item's very last durability point, so an action that burns more than one point at once can still break it before the swap happens. The alert, and a quick manual swap, still have your back there.
 
-For the full option list and the technical details, see [`DURABILITY.md`](DURABILITY.md).
+**Multiplayer.** Auto-replace is **client-driven**: your client, which already sees your gear's durability, notices an item is about to break, picks the replacement, and asks the server to perform the swap, exactly how the sort and transfer buttons work. Nothing about your settings is synced, and the request carries everything the server needs. The mod must be installed **on the server** in multiplayer for the swap to happen, where the server validates and applies it. The alert is purely client-side and needs nothing on the server.
+
+All durability options live under the `durability` section of the config.
 
 ---
 
 ## Item grouping
 
+![](https://raw.githubusercontent.com/Roundaround/mc-inventory-management/refs/heads/main/assets/screenshots/item_grouping.png)
+
 When `itemGrouping` is on (it is by default), the **alphabetical** sort clusters families of related
-items together instead of scattering each variant by its own name — so all 16 wool colors land
+items together instead of scattering each variant by its own name, so all 16 wool colors land
 together, all plank types land together, and so on. Each built-in family has its own
 `grouping.<id>` toggle (all default on); turn one off to fall back to plain name sorting for just
 that family.
 
 A family "lands" in the sorted result at the display-name slot of its **anchor** (for the color
 families that's the white variant, e.g. the whole wool cluster sorts where *White Wool* would).
-Built-in families are listed under the [Configuration](#configuration) section above.
+Built-in families are listed in the Configuration section above.
 
-Groups are consulted **first-match-wins** in this order: **built-ins → mod-registered groups →
-datapack groups**. Built-ins are always consulted first, so nothing a mod or datapack adds can
-hijack a vanilla family.
+Groups are consulted on a **first-match-wins** basis in this order: **built-ins, then mod-registered
+groups, then datapack groups**. Built-ins are always consulted first, so nothing a mod or datapack
+adds can hijack a vanilla family.
 
 ---
 
 ## For mod & pack developers
 
 Inventory Management exposes a small, **loader-agnostic** API (package
-`me.roundaround.inventorymanagement.api.sorting` — no Fabric/NeoForge/Forge types, so one call works
+`me.roundaround.inventorymanagement.api.sorting`, with no Fabric/NeoForge/Forge types, so one call works
 on all three loaders) plus a datapack convention for contributing your own item **variant groups**
 to the sort. A variant group clusters related items so they sort as a block.
 
@@ -214,17 +238,17 @@ ItemVariantRegistry.registerModGroup(
 ItemVariantRegistry.registerModGroup(VariantGroup.by(MyItems.RED_CRYSTAL, MyTags.CRYSTALS));
 ```
 
-- **Anchor** — the first sort key a group produces; the whole cluster lands at that item/key's
+- **Anchor**: the first sort key a group produces; the whole cluster lands at that item/key's
   alphabetical slot, with members ordered within it.
-- **Ordering** — mod groups are consulted *after* every built-in (so they can never shadow a vanilla
+- **Ordering**: mod groups are consulted *after* every built-in (so they can never shadow a vanilla
   family) and *before* datapack groups. Among mods, registration order breaks an overlap, so register
   a narrow predicate (or a disjoint tag) to avoid fighting another mod for the same items.
-- **Timing** — register from your mod-init entrypoint, *before* the first inventory sort.
-- **Enablement** — mod groups are always-on by default. To give users a toggle, back the `enabled`
+- **Timing**: register from your mod-init entrypoint, *before* the first inventory sort.
+- **Enablement**: mod groups are always-on by default. To give users a toggle, back the `enabled`
   `BooleanSupplier` with your own mod's config and pass it into the factory; Inventory Management does
   **not** create a config option or GUI section for mod-registered groups.
 - **Don't** create your own registry via `ItemVariantRegistry.register(Identifier)` expecting the sort
-  to read it — only `registerModGroup(...)` is consulted.
+  to read it; only `registerModGroup(...)` is consulted.
 
 ### Comparator registry (for mods)
 
@@ -234,7 +258,7 @@ items the sort already considers equal.
 
 > **This is a tie-break.** The comparator registry is consulted only **after** the user's primary
 > order (alphabetical/creative) and every built-in metadata comparator have all tied for a pair. A
-> contribution can **never** reorder items the primary or metadata keys already distinguish — it only
+> contribution can **never** reorder items the primary or metadata keys already distinguish; it only
 > refines ordering among otherwise-identical-looking stacks. No priority value, however low, can
 > override the user's chosen order.
 
@@ -242,8 +266,8 @@ Two entry points on `SortComparatorRegistry`:
 
 | Method | Use when |
 |---|---|
-| `registerKey(id, priority, applies, key)` | **Safe path** — your comparator only affects stacks your `applies` predicate accepts (both operands must match); everything else returns `0` and falls through. |
-| `register(id, priority, comparator)` | **Raw/advanced path** — a full `Comparator<ItemStack>`. You own the contract that it returns `0` for any pair it doesn't recognize. |
+| `registerKey(id, priority, applies, key)` | **Safe path**: your comparator only affects stacks your `applies` predicate accepts (both operands must match); everything else returns `0` and falls through. |
+| `register(id, priority, comparator)` | **Raw/advanced path**: a full `Comparator<ItemStack>`. You own the contract that it returns `0` for any pair it doesn't recognize. |
 
 ```java
 import me.roundaround.inventorymanagement.api.sorting.SortComparatorRegistry;
@@ -257,15 +281,15 @@ SortComparatorRegistry.registerKey(
     stack -> -stack.getCount());   // negative => higher count sorts earlier
 ```
 
-- **Priority** — *lower number = consulted first = wins ties earlier*. The registry is
+- **Priority**: *lower number = consulted first = wins ties earlier*. The registry is
   first-non-zero-wins, so the lowest-priority-number contribution that returns non-zero for a pair
   decides it. Equal priority breaks by registration order (first registrant wins).
-- **Timing** — register from your mod-init entrypoint, *before* the first inventory sort. The
+- **Timing**: register from your mod-init entrypoint, *before* the first inventory sort. The
   registry is read live (each sort sees current registrations), but registering *mid-sort* is
   unsupported.
-- **Identity** — `id` is a label only (diagnostics). Re-registering the same id **appends** another
+- **Identity**: `id` is a label only (diagnostics). Re-registering the same id **appends** another
   contribution; it does not replace.
-- **Enablement** — contributions are always-on. To give users a toggle, gate it inside your own
+- **Enablement**: contributions are always-on. To give users a toggle, gate it inside your own
   predicate/comparator with your mod's config; Inventory Management adds no GUI for them.
 
 ### Datapack group tags (no code)
@@ -274,7 +298,7 @@ Datapacks (or resourcepacks that ship data) can define grouping families with **
 tag whose path starts with `grouping/` automatically becomes a family.
 
 - File: `data/<namespace>/tags/item/grouping/<name>.json`
-- Tag id: `#<namespace>:grouping/<name>` — e.g. `#mymod:grouping/gems`
+- Tag id: `#<namespace>:grouping/<name>`, for example `#mymod:grouping/gems`
 
 ```json
 {
@@ -290,8 +314,8 @@ tag whose path starts with `grouping/` automatically becomes a family.
 - The cluster **anchors at the tag's language key** (e.g. `tag.item.mymod.grouping.gems`). Add that
   key to your pack's `en_us.json` to give the cluster a friendly landing name; otherwise the raw key
   is used. The anchor is reload-stable (it doesn't move when tag membership changes).
-- **Reload-aware** — item tags are synced to the client, so the datapack family set is rebuilt on
+- **Reload-aware**: item tags are synced to the client, so the datapack family set is rebuilt on
   world join and on `/reload`.
-- **Toggles** — the `grouping.dynamicGroups` config option (default on) gates *all* datapack
+- **Toggles**: the `grouping.dynamicGroups` config option (default on) gates *all* datapack
   families at once; `grouping.disabledDynamicGroups` (a list of tag ids in the config file) disables
   individual ones.
