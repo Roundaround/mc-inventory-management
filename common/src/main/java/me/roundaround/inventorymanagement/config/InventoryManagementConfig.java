@@ -8,6 +8,7 @@ import me.roundaround.trove.config.manage.store.GameScopedFileStore;
 import me.roundaround.trove.config.manage.store.WorldScopedFileStore;
 import me.roundaround.trove.config.option.BooleanConfigOption;
 import me.roundaround.trove.config.option.EnumConfigOption;
+import me.roundaround.trove.config.option.IntConfigOption;
 import me.roundaround.trove.config.option.PositionConfigOption;
 import me.roundaround.trove.config.option.StringListConfigOption;
 import me.roundaround.trove.config.value.Position;
@@ -138,10 +139,18 @@ public class InventoryManagementConfig extends ModConfigImpl implements GameScop
   public BooleanConfigOption durabilityAlertEnabled;
 
   /**
-   * Percent-of-max durability thresholds (1-99) that trigger a low-durability alert, fired once each
-   * as durability crosses them downward. File-edited; no GUI control.
+   * First percent-of-max durability threshold (0-99) that triggers a low-durability alert, firing once
+   * as durability crosses it downward. Set to 0 to skip this threshold. Shown in the config GUI as a
+   * slider. Defaults to 10.
    */
-  public IntListConfigOption durabilityAlertThresholds;
+  public IntConfigOption durabilityAlertThreshold1;
+
+  /**
+   * Second percent-of-max durability threshold (0-99) that triggers a low-durability alert, firing once
+   * as durability crosses it downward. Set to 0 to skip this threshold. Shown in the config GUI as a
+   * slider. Defaults to 5.
+   */
+  public IntConfigOption durabilityAlertThreshold2;
 
   /** Whether to also fire a low-durability alert at exactly 1 durability point remaining. */
   public BooleanConfigOption durabilityAlertAtOne;
@@ -207,12 +216,23 @@ public class InventoryManagementConfig extends ModConfigImpl implements GameScop
             "Show a low-durability action-bar alert (and anvil ping) when a tool or equipped item drops past a threshold.")
         .build()).clientOnly().commit();
 
-    this.durabilityAlertThresholds = this.buildRegistration(IntListConfigOption.builder(ConfigPath.of(
-        "durability", "durabilityAlertThresholds"))
-        .setDefaultValue(List.of(10, 5))
+    this.durabilityAlertThreshold1 = this.buildRegistration(IntConfigOption.sliderBuilder(ConfigPath.of(
+            "durability", "durabilityAlertThreshold1"))
+        .setDefaultValue(10)
+        .setMinValue(0)
+        .setMaxValue(99)
         .setComment(
-            "Percent-of-max durability thresholds (1-99) that trigger a low-durability alert; each fires once as durability crosses it downward. File-edited; no GUI control.")
-        .build()).clientOnly().noGuiControl().commit();
+            "First percent-of-max durability threshold (0-99) that triggers a low-durability alert; fires once as durability crosses it downward. Set to 0 to skip this threshold.")
+        .build()).clientOnly().commit();
+
+    this.durabilityAlertThreshold2 = this.buildRegistration(IntConfigOption.sliderBuilder(ConfigPath.of(
+            "durability", "durabilityAlertThreshold2"))
+        .setDefaultValue(5)
+        .setMinValue(0)
+        .setMaxValue(99)
+        .setComment(
+            "Second percent-of-max durability threshold (0-99) that triggers a low-durability alert; fires once as durability crosses it downward. Set to 0 to skip this threshold.")
+        .build()).clientOnly().commit();
 
     this.durabilityAlertAtOne = this.buildRegistration(BooleanConfigOption.builder(ConfigPath.of(
         "durability", "durabilityAlertAtOne"))
@@ -413,14 +433,23 @@ public class InventoryManagementConfig extends ModConfigImpl implements GameScop
   }
 
   /**
-   * The configured percent-of-max durability alert thresholds, guarded against pre-init access (returns
-   * an empty list before the config is initialized). Mirrors {@link #getLockedPlayerSlots()}.
+   * The active percent-of-max durability alert thresholds, built from {@link #durabilityAlertThreshold1}
+   * and {@link #durabilityAlertThreshold2}. A threshold set to 0 (or less) is skipped, so the list holds
+   * only the positive ones. Guarded against pre-init access (returns an empty list before the config is
+   * initialized).
    */
   public List<Integer> getDurabilityAlertThresholds() {
-    if (!this.isInitialized() || this.durabilityAlertThresholds == null) {
+    if (!this.isInitialized() || this.durabilityAlertThreshold1 == null || this.durabilityAlertThreshold2 == null) {
       return List.of();
     }
-    return this.durabilityAlertThresholds.getValue();
+    List<Integer> thresholds = new ArrayList<>(2);
+    if (this.durabilityAlertThreshold1.getValue() > 0) {
+      thresholds.add(this.durabilityAlertThreshold1.getValue());
+    }
+    if (this.durabilityAlertThreshold2.getValue() > 0) {
+      thresholds.add(this.durabilityAlertThreshold2.getValue());
+    }
+    return thresholds;
   }
 
   /**
