@@ -1,6 +1,7 @@
 package me.roundaround.inventorymanagement.gametest.gui;
 
 import me.roundaround.allay.api.gametest.ClientGameTest;
+import me.roundaround.allay.api.gametest.Only;
 import me.roundaround.inventorymanagement.client.gui.InventoryManagementButton;
 import me.roundaround.inventorymanagement.client.gui.SortInventoryButton;
 import me.roundaround.trove.gametest.ClientTest;
@@ -27,7 +28,7 @@ import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 public class PlayerScreenOnlySortButtonTest implements ClientTest {
   @Override
   public void runTest(ClientTestContext context) {
-    try (ClientWorld world = context.worldBuilder().creative().stopTime(true).create()) {
+    try (ClientWorld world = context.worldBuilder().survival().stopTime(true).create()) {
       context.setScreen(() -> new InventoryScreen(Minecraft.getInstance().player));
       context.waitTicks(2);
 

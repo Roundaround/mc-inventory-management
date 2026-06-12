@@ -12,6 +12,7 @@ import me.roundaround.trove.event.ScreenLifecycle;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.Container;
@@ -86,6 +87,13 @@ public class InventoryButtonsManager {
 
     this.playerButtons.clear();
     this.containerButtons.clear();
+
+    // The creative mode inventory screen (the tabbed one) reuses the survival
+    // player inventory only on the survival-inventory tab and otherwise presents
+    // an item picker, so we never show buttons on it.
+    if (screen instanceof CreativeModeInventoryScreen) {
+      return;
+    }
 
     this.generateSortButton(handledScreen, false);
     this.generateAutoStackButton(handledScreen, false);
