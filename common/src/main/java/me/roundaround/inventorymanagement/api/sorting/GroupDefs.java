@@ -65,39 +65,39 @@ public final class GroupDefs {
       // --- Predicate families that must precede the broader tag/predicate families they could shadow ---
       new GroupDef("glazed_terracotta", "Glazed Terracotta",
           (enabled) -> VariantGroup.byPredicate(
-              idEndsWith("_glazed_terracotta"), descId(Items.WHITE_GLAZED_TERRACOTTA), enabled)),
+              idEndsWith("_glazed_terracotta"), descId(Items.GLAZED_TERRACOTTA.white()), enabled)),
       new GroupDef("terracotta", "Terracotta",
           (enabled) -> VariantGroup.by(Items.TERRACOTTA, ItemTags.TERRACOTTA, enabled)),
 
       new GroupDef("stained_glass_pane", "Stained Glass Panes",
           (enabled) -> VariantGroup.byPredicate(
-              idEndsWith("_stained_glass_pane"), descId(Items.WHITE_STAINED_GLASS_PANE), enabled)),
+              idEndsWith("_stained_glass_pane"), descId(Items.STAINED_GLASS_PANE.white()), enabled)),
       new GroupDef("stained_glass", "Stained Glass",
           (enabled) -> VariantGroup.byPredicate(
-              idEndsWith("_stained_glass"), descId(Items.WHITE_STAINED_GLASS), enabled)),
+              idEndsWith("_stained_glass"), descId(Items.STAINED_GLASS.white()), enabled)),
 
       new GroupDef("concrete_powder", "Concrete Powder",
           (enabled) -> VariantGroup.byPredicate(
-              idEndsWith("_concrete_powder"), descId(Items.WHITE_CONCRETE_POWDER), enabled)),
+              idEndsWith("_concrete_powder"), descId(Items.CONCRETE_POWDER.white()), enabled)),
       new GroupDef("concrete", "Concrete",
           (enabled) -> VariantGroup.byPredicate(
-              idEndsWith("_concrete"), descId(Items.WHITE_CONCRETE), enabled)),
+              idEndsWith("_concrete"), descId(Items.CONCRETE.white()), enabled)),
 
       // --- Tag-based color/dye families (mutually disjoint, order-independent) ---
       new GroupDef("wool", "Wool",
-          (enabled) -> VariantGroup.by(Items.WHITE_WOOL, ItemTags.WOOL, enabled)),
+          (enabled) -> VariantGroup.by(Items.WOOL.white(), ItemTags.WOOL, enabled)),
       new GroupDef("wool_carpets", "Carpets",
-          (enabled) -> VariantGroup.by(Items.WHITE_CARPET, ItemTags.WOOL_CARPETS, enabled)),
+          (enabled) -> VariantGroup.by(Items.CARPET.white(), ItemTags.WOOL_CARPETS, enabled)),
       new GroupDef("beds", "Beds",
-          (enabled) -> VariantGroup.by(Items.WHITE_BED, ItemTags.BEDS, enabled)),
+          (enabled) -> VariantGroup.by(Items.BED.white(), ItemTags.BEDS, enabled)),
       new GroupDef("candles", "Candles",
           (enabled) -> VariantGroup.by(Items.CANDLE, ItemTags.CANDLES, enabled)),
       new GroupDef("banners", "Banners",
-          (enabled) -> VariantGroup.by(Items.WHITE_BANNER, ItemTags.BANNERS, enabled)),
+          (enabled) -> VariantGroup.by(Items.BANNER.white(), ItemTags.BANNERS, enabled)),
       new GroupDef("shulker_boxes", "Shulker Boxes",
           (enabled) -> VariantGroup.by(Items.SHULKER_BOX, ItemTags.SHULKER_BOXES, enabled)),
       new GroupDef("dyes", "Dyes",
-          (enabled) -> VariantGroup.by(Items.WHITE_DYE, ItemTags.DYES, enabled)),
+          (enabled) -> VariantGroup.by(Items.DYE.white(), ItemTags.DYES, enabled)),
 
       // --- Tag-based wood/material families (mutually disjoint, order-independent) ---
       new GroupDef("planks", "Planks",
@@ -127,7 +127,7 @@ public final class GroupDefs {
 
       // --- Predicate families with no vanilla item tag (disjoint, order-independent) ---
       new GroupDef("spawn_eggs", "Spawn Eggs",
-          (enabled) -> VariantGroup.byPredicate(idEndsWith("_spawn_egg"), descId(Items.WHITE_DYE), enabled)),
+          (enabled) -> VariantGroup.byPredicate(idEndsWith("_spawn_egg"), descId(Items.DYE.white()), enabled)),
       new GroupDef("pottery_sherds", "Pottery Sherds",
           (enabled) -> VariantGroup.byPredicate(idEndsWith("_pottery_sherd"), descId(Items.BRICK), enabled)),
       new GroupDef("horse_armor", "Horse Armor",

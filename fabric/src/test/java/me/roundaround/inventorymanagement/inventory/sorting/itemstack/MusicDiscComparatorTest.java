@@ -33,7 +33,7 @@ public class MusicDiscComparatorTest extends BaseMinecraftTest {
     return getUniquePairs(List.of(
         new ItemStack(Items.DIAMOND),
         new ItemStack(Items.DIRT),
-        new ItemStack(Items.RED_BANNER)
+        new ItemStack(Items.BANNER.red())
     ));
   }
 

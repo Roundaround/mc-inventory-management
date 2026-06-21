@@ -18,7 +18,7 @@ public abstract class HotbarScrollSwapMixin {
   )
   )
   private int handleHotbarSwapScroll(double wheel, int currentSelected, int limit, Operation<Integer> original) {
-    if (Minecraft.getInstance().screen == null && HotbarSwapClient.isModifierActive()) {
+    if (Minecraft.getInstance().gui.screen() == null && HotbarSwapClient.isModifierActive()) {
       HotbarSwapClient.cycle(wheel);
       return currentSelected;
     }

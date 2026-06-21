@@ -19,6 +19,6 @@ public class AnywherePositionEditScreen extends PositionEditScreen {
   public void onClose() {
     this.subscriptions.forEach(Subscription::close);
     this.subscriptions.clear();
-    this.minecraft.setScreen(this.anywhereParent);
+    this.minecraft.gui.setScreen(this.anywhereParent);
   }
 }

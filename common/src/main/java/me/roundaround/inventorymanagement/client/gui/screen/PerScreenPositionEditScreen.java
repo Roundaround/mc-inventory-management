@@ -57,7 +57,7 @@ public class PerScreenPositionEditScreen extends AnywherePositionEditScreen {
           .messageAndTooltip(Component.translatable(this.isPlayerInventory ?
               "inventorymanagement.position_edit.switch_side.to_container" :
               "inventorymanagement.position_edit.switch_side.to_player"))
-          .onPress((button) -> this.minecraft.setScreen(new PerScreenPositionEditScreen(
+          .onPress((button) -> this.minecraft.gui.setScreen(new PerScreenPositionEditScreen(
               this.anywhereParent,
               !this.isPlayerInventory
           )))

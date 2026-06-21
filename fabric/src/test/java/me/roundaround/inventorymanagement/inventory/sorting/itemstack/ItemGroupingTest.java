@@ -57,7 +57,7 @@ public class ItemGroupingTest extends BaseMinecraftTest {
     Predicate<ItemStack> isSpawnEgg =
         (stack) -> BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath().endsWith("_spawn_egg");
     VariantGroup spawnEggs = VariantGroup.byPredicate(
-        isSpawnEgg, Items.WHITE_DYE.getDescriptionId(), () -> SPAWN_EGGS_ENABLED[0]);
+        isSpawnEgg, Items.DYE.white().getDescriptionId(), () -> SPAWN_EGGS_ENABLED[0]);
     ItemVariantRegistry.COLOR.register(spawnEggs);
   }
 

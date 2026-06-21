@@ -42,7 +42,7 @@ public final class HotbarSwapHud {
     if (player == null) {
       return;
     }
-    if (!Minecraft.renderNames()) {
+    if (minecraft.gui.hud.isHidden()) {
       return;
     }
 

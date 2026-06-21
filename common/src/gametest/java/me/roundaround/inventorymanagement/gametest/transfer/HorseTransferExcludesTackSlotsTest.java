@@ -12,7 +12,7 @@ import net.minecraft.client.gui.screens.inventory.HorseInventoryScreen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.animal.equine.Donkey;
 import net.minecraft.world.inventory.HorseInventoryMenu;
 import net.minecraft.world.item.ItemStack;
@@ -48,7 +48,7 @@ public class HorseTransferExcludesTackSlotsTest implements ClientTest {
       BlockPos pos = world.playerBlockPos().south(2);
       // A tame donkey WITH a chest actually exposes bulk inventory columns (a plain HORSE never does), so an
       // opened menu would have real chest slots to assert against.
-      Donkey donkey = world.summon(EntityType.DONKEY, pos, "{Tame:1b,ChestedHorse:1b}");
+      Donkey donkey = world.summon(EntityTypes.DONKEY, pos, "{Tame:1b,ChestedHorse:1b}");
 
       // Seed the player with the tack (saddle + body armor) and a bulk stack to transfer.
       world.setInventoryItem(9, new ItemStack(Items.SADDLE));
@@ -112,7 +112,7 @@ public class HorseTransferExcludesTackSlotsTest implements ClientTest {
     });
     try {
       // Short, bounded wait — if the inventory does not open promptly, fall back to the partial check.
-      context.waitFor(mc -> mc.screen instanceof HorseInventoryScreen, 20);
+      context.waitFor(mc -> mc.gui.screen() instanceof HorseInventoryScreen, 20);
     } catch (GameTestAssertionException ignored) {
       context.runOnClient(mc -> mc.options.keyShift.setDown(false));
       return null;

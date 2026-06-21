@@ -40,11 +40,11 @@ public class ContainerContentsComparatorTest extends BaseMinecraftTest {
     return getUniquePairs(createListOfEmpty(
         DataComponents.CONTAINER,
         Items.NETHERITE_CHESTPLATE,
-        Items.RED_BANNER,
+        Items.BANNER.red(),
         Items.DIAMOND_CHESTPLATE,
         Items.FIRE_CHARGE,
         Items.SHULKER_BOX,
-        Items.BLUE_BANNER,
+        Items.BANNER.blue(),
         Items.BAMBOO
     ));
   }
@@ -58,9 +58,9 @@ public class ContainerContentsComparatorTest extends BaseMinecraftTest {
   private static Stream<Arguments> getShulkerSamples() {
     return getUniquePairs(List.of(
         createStack(Items.SHULKER_BOX, generateFullInventory(Items.DIRT, 27)),
-        createStack(Items.BLUE_SHULKER_BOX, generateFullInventory(Items.DIRT, 27)),
-        createStack(Items.ORANGE_SHULKER_BOX, generateFullInventory(Items.DIRT, 27)),
-        createStack(Items.GREEN_SHULKER_BOX, generateFullInventory(Items.DIRT, 27))
+        createStack(Items.DYED_SHULKER_BOX.blue(), generateFullInventory(Items.DIRT, 27)),
+        createStack(Items.DYED_SHULKER_BOX.orange(), generateFullInventory(Items.DIRT, 27)),
+        createStack(Items.DYED_SHULKER_BOX.green(), generateFullInventory(Items.DIRT, 27))
     ));
   }
 

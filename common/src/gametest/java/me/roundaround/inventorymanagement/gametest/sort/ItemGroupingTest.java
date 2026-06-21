@@ -57,12 +57,12 @@ public class ItemGroupingTest implements ClientTest {
 
   private static void seed(ClientWorld world, BlockPos pos) {
     // Interleaved wool colors plus iron ingot; deliberately not pre-sorted.
-    world.setContainerItem(pos, 0, new ItemStack(Items.RED_WOOL));
+    world.setContainerItem(pos, 0, new ItemStack(Items.WOOL.red()));
     world.setContainerItem(pos, 1, new ItemStack(Items.IRON_INGOT));
-    world.setContainerItem(pos, 2, new ItemStack(Items.BLACK_WOOL));
-    world.setContainerItem(pos, 3, new ItemStack(Items.WHITE_WOOL));
-    world.setContainerItem(pos, 4, new ItemStack(Items.GREEN_WOOL));
-    world.setContainerItem(pos, 5, new ItemStack(Items.BLUE_WOOL));
+    world.setContainerItem(pos, 2, new ItemStack(Items.WOOL.black()));
+    world.setContainerItem(pos, 3, new ItemStack(Items.WOOL.white()));
+    world.setContainerItem(pos, 4, new ItemStack(Items.WOOL.green()));
+    world.setContainerItem(pos, 5, new ItemStack(Items.WOOL.blue()));
     world.context().waitTicks(2);
   }
 
@@ -92,8 +92,8 @@ public class ItemGroupingTest implements ClientTest {
   }
 
   private static boolean isWool(Item item) {
-    return item == Items.RED_WOOL || item == Items.BLACK_WOOL || item == Items.WHITE_WOOL
-        || item == Items.GREEN_WOOL || item == Items.BLUE_WOOL;
+    return item == Items.WOOL.red() || item == Items.WOOL.black() || item == Items.WOOL.white()
+        || item == Items.WOOL.green() || item == Items.WOOL.blue();
   }
 
   private static String describe(List<ItemStack> snapshot) {

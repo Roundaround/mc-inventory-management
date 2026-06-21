@@ -1,5 +1,5 @@
 [versions]
-trove = "1.1.0+26.1"
+trove = "1.4.1+26.2"
 
 [libraries]
 trove-bom = { module = "me.roundaround:trove-bom", version.ref = "trove" }

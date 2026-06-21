@@ -18,7 +18,7 @@ public abstract class HotbarNumberKeySwapMixin {
   )
   )
   private void insertSelectedRowIndicator(Inventory inv, int selected, Operation<Void> original) {
-    if (Minecraft.getInstance().screen == null && HotbarSwapClient.isModifierActive() &&
+    if (Minecraft.getInstance().gui.screen() == null && HotbarSwapClient.isModifierActive() &&
         HotbarSwapClient.numberKeysEnabled()) {
       if (selected >= 0 && selected <= 2) {
         HotbarSwapClient.pressRow(selected + 1);

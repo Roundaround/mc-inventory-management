@@ -36,10 +36,10 @@ public class CountComparatorTest extends BaseMinecraftTest {
   private static Stream<Arguments> getMiscSamples() {
     return getUniquePairs(List.of(
         new ItemStack(Items.NETHERITE_CHESTPLATE),
-        new ItemStack(Items.RED_BANNER),
+        new ItemStack(Items.BANNER.red()),
         new ItemStack(Items.DIAMOND_CHESTPLATE),
         new ItemStack(Items.FIRE_CHARGE),
-        new ItemStack(Items.BLUE_BANNER),
+        new ItemStack(Items.BANNER.blue()),
         new ItemStack(Items.BAMBOO)
     ));
   }
