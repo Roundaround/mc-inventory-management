@@ -10,7 +10,8 @@ pluginManagement {
 
 rootProject.name = "inventorymanagement"
 
-listOf("fabric", "neoforge", "forge").forEach { loader ->
+// neoforge + forge deferred: no upstream 26.3 build yet (their subprojects stay in-tree).
+listOf("fabric").forEach { loader ->
     val path = ":$loader"
     include(path)
     project(path).projectDir = file(loader)

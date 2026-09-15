@@ -1,5 +1,7 @@
 package me.roundaround.inventorymanagement.inventory.sorting.itemstack;
 
+import net.minecraft.world.item.ItemStackTemplate;
+import java.util.Optional;
 import me.roundaround.inventorymanagement.inventory.sorting.CachingComparatorImpl;
 import me.roundaround.inventorymanagement.inventory.sorting.LexicographicalListComparator;
 import me.roundaround.inventorymanagement.inventory.sorting.PredicatedComparator;
@@ -36,13 +38,16 @@ public class DecoratedPotComparator extends CachingComparatorImpl<ItemStack,
         return null;
       }
 
-      List<Item> items = component.ordered();
+      // 26.3: sides are optional item stacks (an empty side is a plain brick).
+      List<Optional<ItemStackTemplate>> sides =
+          List.of(component.back(), component.left(), component.right(), component.front());
 
       int count = 0;
       ArrayList<String> translated = new ArrayList<>();
 
       Language language = Language.getInstance();
-      for (Item item : items) {
+      for (Optional<ItemStackTemplate> side : sides) {
+        Item item = side.map((template) -> template.create().getItem()).orElse(Items.BRICK);
         if (item != Items.BRICK) {
           count++;
           translated.add(language.getOrDefault(item.getDescriptionId()));

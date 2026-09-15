@@ -36,35 +36,35 @@ public final class InventoryManagementKeyMappings {
 
     positionEditPlayer = KeyBindings.register(new KeyMapping(
         "inventorymanagement.keybind.position_edit.player",
-        InputConstants.Type.KEYSYM,
+        InputConstants.Type.KEYBOARD,
         InputConstants.UNKNOWN.getValue(),
         category
     ));
 
     positionEditContainer = KeyBindings.register(new KeyMapping(
         "inventorymanagement.keybind.position_edit.container",
-        InputConstants.Type.KEYSYM,
+        InputConstants.Type.KEYBOARD,
         InputConstants.UNKNOWN.getValue(),
         category
     ));
 
     peekLockedSlots = KeyBindings.register(new KeyMapping(
         "inventorymanagement.keybind.peek_locked_slots",
-        InputConstants.Type.KEYSYM,
+        InputConstants.Type.KEYBOARD,
         InputConstants.UNKNOWN.getValue(),
         category
     ));
 
     hotbarSwapModifier = KeyBindings.register(new KeyMapping(
         "inventorymanagement.keybind.hotbar_swap.modifier",
-        InputConstants.Type.KEYSYM,
+        InputConstants.Type.KEYBOARD,
         InputConstants.UNKNOWN.getValue(),
         category
     ));
 
     hotbarSwapReset = KeyBindings.register(new KeyMapping(
         "inventorymanagement.keybind.hotbar_swap.reset",
-        InputConstants.Type.KEYSYM,
+        InputConstants.Type.KEYBOARD,
         InputConstants.UNKNOWN.getValue(),
         category
     ));

@@ -33,7 +33,7 @@ public class BundleContentsComparator extends CachingComparatorImpl<ItemStack,
       var itemCount = new Object() { int value = 0; };
       var totalQuantity = new Object() { int value = 0; };
 
-      contents.itemCopyStream().forEach((slotStack) -> {
+      contents.itemCopies().forEach((slotStack) -> {
         itemCount.value++;
         totalQuantity.value += slotStack.getCount();
       });

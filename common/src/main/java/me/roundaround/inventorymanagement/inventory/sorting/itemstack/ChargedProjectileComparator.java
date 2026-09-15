@@ -32,8 +32,8 @@ public class ChargedProjectileComparator extends CachingComparatorImpl<ItemStack
       }
 
       boolean loaded = !charged.isEmpty();
-      int projectileCount = charged.itemCopies().size();
-      String projectileType = charged.itemCopies().stream()
+      int projectileCount = charged.size();
+      String projectileType = charged.itemCopies()
           .findFirst()
           .map(s -> s.getItem().getDescriptionId())
           .orElse("");
