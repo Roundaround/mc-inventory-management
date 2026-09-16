@@ -63,7 +63,7 @@ public class BundleContentsComparatorTest extends BaseMinecraftTest {
 
   private static ItemStack createBundle(List<ItemStack> items) {
     ItemStack stack = new ItemStack(Items.BUNDLE);
-    BundleContents.Mutable mutable = new BundleContents.Mutable(BundleContents.EMPTY);
+    BundleContents.Mutable mutable = new BundleContents.Mutable();
     for (ItemStack item : items) {
       mutable.tryInsert(item);
     }

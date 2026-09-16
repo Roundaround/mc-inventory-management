@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import me.roundaround.inventorymanagement.testing.BaseMinecraftTest;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.PotDecorations;
 import org.junit.jupiter.api.BeforeAll;
@@ -13,6 +14,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static me.roundaround.inventorymanagement.testing.DataGen.createListOfEmpty;
@@ -66,7 +68,11 @@ public class DecoratedPotComparatorTest extends BaseMinecraftTest {
       net.minecraft.world.item.Item front
   ) {
     ItemStack stack = new ItemStack(Items.DECORATED_POT);
-    stack.set(DataComponents.POT_DECORATIONS, new PotDecorations(back, left, right, front));
+    stack.set(DataComponents.POT_DECORATIONS, new PotDecorations(
+        Optional.of(new ItemStackTemplate(back)),
+        Optional.of(new ItemStackTemplate(left)),
+        Optional.of(new ItemStackTemplate(right)),
+        Optional.of(new ItemStackTemplate(front))));
     return stack;
   }
 }
