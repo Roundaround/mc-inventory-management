@@ -1,80 +1,53 @@
 package me.roundaround.inventorymanagement.inventory.sorting.itemstack;
 
-import me.roundaround.inventorymanagement.inventory.sorting.SerialComparator;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 
-public class CreativeIndexComparator implements SerialComparator<ItemStack> {
-  private static CreativeIndexComparator instance;
+/**
+ * Orders stacks by creative-menu position: category tab in registry order, then position within the tab, with
+ * items in no tab last. Indexes the tabs' display contents as they are at construction, so build one per sort
+ * after {@code ClientInventoryHelper} has built the contents for the player; vanilla itself only builds them
+ * when the creative inventory screen opens, and against empty tabs every item ties.
+ */
+public class CreativeIndexComparator implements Comparator<ItemStack> {
+  private static final Comparator<TabPosition> BY_POSITION =
+      Comparator.comparingInt(TabPosition::tab).thenComparingInt(TabPosition::index);
 
-  private final List<Comparator<ItemStack>> delegates;
+  private final Map<Item, TabPosition> positions = new HashMap<>();
 
-  private final List<CreativeModeTab> itemGroups = CreativeModeTabs.allTabs();
-  private final HashMap<CreativeModeTab, LinkedHashSet<Item>> itemsByGroup = new HashMap<>(this.itemGroups.size());
-  private final HashMap<Item, Integer> groupIndexByItem = new HashMap<>();
-  private final HashMap<Item, CreativeModeTab> groupByItem = new HashMap<>();
-
-  private CreativeIndexComparator() {
-    this.itemGroups.forEach((group) -> {
-      LinkedHashSet<Item> items = new LinkedHashSet<>();
-      group.getDisplayItems().forEach((stack) -> {
-        items.add(stack.getItem());
-      });
-      this.itemsByGroup.put(group, items);
-    });
-
-    BuiltInRegistries.ITEM.forEach((item) -> {
-      int index = 0;
-      for (var entry : this.itemsByGroup.entrySet()) {
-        if (entry.getValue().contains(item)) {
-          this.groupIndexByItem.put(item, index);
-          this.groupByItem.put(item, entry.getKey());
-          return;
-        }
-        index++;
+  public CreativeIndexComparator() {
+    int tab = 0;
+    for (CreativeModeTab group : CreativeModeTabs.allTabs()) {
+      if (group.getType() != CreativeModeTab.Type.CATEGORY) {
+        continue;
       }
-      this.groupIndexByItem.put(item, null);
-      this.groupByItem.put(item, null);
-    });
-
-    this.delegates = List.of(
-        Comparator.comparing(this::getGroupIndexOrNull, Comparator.nullsLast(Integer::compareTo)),
-        Comparator.comparing(this::getIndexInGroupOrNull, Comparator.nullsLast(Integer::compareTo))
-    );
-  }
-
-  public static CreativeIndexComparator getInstance() {
-    if (instance == null) {
-      instance = new CreativeIndexComparator();
+      int index = 0;
+      HashSet<Item> seen = new HashSet<>();
+      for (ItemStack stack : group.getDisplayItems()) {
+        if (seen.add(stack.getItem())) {
+          this.positions.putIfAbsent(stack.getItem(), new TabPosition(tab, index++));
+        }
+      }
+      tab++;
     }
-    return instance;
   }
 
   @Override
-  public @NotNull Iterator<Comparator<ItemStack>> iterator() {
-    return this.delegates.iterator();
+  public int compare(ItemStack a, ItemStack b) {
+    return Comparator.nullsLast(BY_POSITION).compare(this.positionOrNull(a), this.positionOrNull(b));
   }
 
-  private Integer getGroupIndexOrNull(ItemStack stack) {
-    return this.groupIndexByItem.get(stack.getItem());
+  private TabPosition positionOrNull(ItemStack stack) {
+    return this.positions.get(stack.getItem());
   }
 
-  private Integer getIndexInGroupOrNull(ItemStack stack) {
-    return Optional.ofNullable(this.groupByItem.get(stack.getItem())).map(this.itemsByGroup::get).map((items) -> {
-      int index = 0;
-      for (Item item : items) {
-        if (Objects.equals(item, stack.getItem())) {
-          return index;
-        }
-        index++;
-      }
-      return null;
-    }).orElse(null);
+  private record TabPosition(int tab, int index) {
   }
 }
