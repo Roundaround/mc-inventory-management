@@ -21,14 +21,17 @@ public class ItemStackComparator implements SerialComparator<ItemStack> {
   }
 
   public static ItemStackComparator create(UUID player) {
-    SortContext context = new SortContext(player);
+    return create(new SortContext(player));
+  }
+
+  public static ItemStackComparator create(SortContext context) {
     ArrayList<Comparator<ItemStack>> delegates = new ArrayList<>();
 
     if (context.mode() == SortMode.ALPHABETICAL && context.containersFirst()) {
       delegates.add(new ContainerFirstComparator());
     }
     if (context.mode() == SortMode.CREATIVE) {
-      delegates.add(CreativeIndexComparator.getInstance());
+      delegates.add(new CreativeIndexComparator());
     }
 
     delegates.add(new ItemNameComparator(context));
