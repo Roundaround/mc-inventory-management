@@ -8,38 +8,25 @@ import me.roundaround.inventorymanagement.gametest.InvGameTests;
 import me.roundaround.trove.gametest.ClientTest;
 import me.roundaround.trove.gametest.ClientTestContext;
 import me.roundaround.trove.gametest.ClientWorld;
+import me.roundaround.trove.gametest.GameTestAssertionException;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.item.CreativeModeTabs;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static me.roundaround.trove.gametest.GameTestAssertions.assertSlot;
 
 /**
- * SORT-07 (PARTIAL — see the creative-mode caveat below): alphabetical and creative sort modes should
- * produce different orderings for a set whose creative-tab order disagrees with its name order.
- * "Apple" precedes "Stone" alphabetically, but stone (Building Blocks tab) precedes apple (Food &amp;
- * Drink tab) in creative order — so with just {@code {apple, stone}} the only two possible results are
- * {@code [apple, stone]} (alphabetical / degenerate) and {@code [stone, apple]} (working creative).
+ * SORT-07: alphabetical and creative sort modes produce different orderings for a set whose creative-tab
+ * order disagrees with its name order. Alphabetically it is apple, granite, stone; in the creative menu
+ * stone and granite lead the Building Blocks tab (stone first) and apple sits in Food &amp; Drink, so
+ * creative order is stone, granite, apple. The player never opens the creative inventory screen here,
+ * which is the case that used to degrade creative to name order (issue #65): vanilla builds the tab
+ * contents only from that screen, so the sort must build them itself.
  *
- * <p><b>The ALPHABETICAL half is always asserted concretely</b> ({@code [apple, stone]}).
- *
- * <p><b>Creative-mode caveat.</b> {@code CreativeIndexComparator} keys on each item's creative-tab
- * <em>display contents</em>, which it caches once (singleton) on the first creative sort. In a real
- * client those contents are rebuilt on world-join; in this headless-ish gametest client they may be
- * empty, in which case the comparator ties every item and the sort falls through to the name
- * comparator — i.e. creative degenerates to alphabetical. We force a tab rebuild
- * ({@link CreativeModeTabs#tryRebuildTabContents}) before the first creative sort to give it the best
- * chance. If creative then differs from alphabetical (it must become {@code [stone, apple]}), we have
- * genuinely exercised the mode difference. If it still matches alphabetical, the contents were
- * unavailable, so we log that and pass rather than fail spuriously.
- *
- * <p>TODO: promote to an unconditional assertion once the gametest harness reliably populates creative
- * tab contents (or exposes a hook to do so) before the run.
+ * <p>Also checks the creative search tree got populated by that build, since vanilla's screen skips its
+ * own search-tree refresh when the tab contents are already current.
  */
 @ClientGameTest
 public class SortModeCreativeVsAlphabeticalTest implements ClientTest {
@@ -48,65 +35,46 @@ public class SortModeCreativeVsAlphabeticalTest implements ClientTest {
     try (ClientWorld world = context.worldBuilder().creative().stopTime(true).create()) {
       InvGameTests.Opened chest = InvGameTests.openChest(context, world);
 
-      // --- Phase 1: ALPHABETICAL (always asserted) ---
       setSortMode(context, SortMode.ALPHABETICAL);
       seed(world, chest.pos());
       InvGameTests.act(context, mc -> ClientNetworking.sendSort(mc.player, false));
 
       List<ItemStack> alphabetical = world.containerSnapshot(chest.pos());
       assertSlot(alphabetical, 0, Items.APPLE, 1);
-      assertSlot(alphabetical, 1, Items.STONE, 1);
-      List<Item> alphabeticalOrder = itemOrder(alphabetical);
+      assertSlot(alphabetical, 1, Items.GRANITE, 1);
+      assertSlot(alphabetical, 2, Items.STONE, 1);
 
-      // --- Phase 2: CREATIVE (reset the container first) ---
       clear(world, chest.pos());
-      // Populate creative-tab display contents before the first creative sort builds (and caches) the
-      // CreativeIndexComparator; otherwise the comparator caches empty tabs and creative degenerates.
-      context.runOnClient(mc -> CreativeModeTabs.tryRebuildTabContents(
-          mc.level.enabledFeatures(), false, mc.level.registryAccess()));
-      context.waitTicks(1);
-
       setSortMode(context, SortMode.CREATIVE);
       seed(world, chest.pos());
       InvGameTests.act(context, mc -> ClientNetworking.sendSort(mc.player, false));
 
-      List<Item> creativeOrder = itemOrder(world.containerSnapshot(chest.pos()));
+      List<ItemStack> creative = world.containerSnapshot(chest.pos());
+      assertSlot(creative, 0, Items.STONE, 1);
+      assertSlot(creative, 1, Items.GRANITE, 1);
+      assertSlot(creative, 2, Items.APPLE, 1);
 
-      if (creativeOrder.equals(alphabeticalOrder)) {
-        // Degenerate: creative-tab contents were unavailable in this client, so the creative comparator
-        // tied everything and the sort fell through to name order. Alphabetical correctness is still
-        // verified above; the mode *difference* simply could not be exercised here.
-        System.out.println("[SortModeCreativeVsAlphabeticalTest] PARTIAL: creative-tab contents "
-            + "unavailable in the gametest client, so CREATIVE sort degenerated to name order (== "
-            + "ALPHABETICAL). The mode difference was not exercised; alphabetical order was asserted. "
-            + "See class Javadoc TODO.");
-      }
-      // else: creative produced [stone, apple] != [apple, stone] — the mode difference was genuinely
-      // exercised, which is the success path.
+      context.runOnClient(mc -> {
+        if (mc.player.connection.searchTrees().creativeNameSearch().search("stone").isEmpty()) {
+          throw new GameTestAssertionException("creative name search is empty after the sort built the tab contents");
+        }
+      });
     }
   }
 
   private static void seed(ClientWorld world, BlockPos pos) {
-    // Scrambled so a sort genuinely has to reorder: stone before apple.
-    world.setContainerItem(pos, 0, new ItemStack(Items.STONE));
-    world.setContainerItem(pos, 1, new ItemStack(Items.APPLE));
+    // Scrambled so neither mode can pass by leaving the slots alone.
+    world.setContainerItem(pos, 0, new ItemStack(Items.GRANITE));
+    world.setContainerItem(pos, 1, new ItemStack(Items.STONE));
+    world.setContainerItem(pos, 2, new ItemStack(Items.APPLE));
     world.context().waitTicks(2);
   }
 
   private static void clear(ClientWorld world, BlockPos pos) {
-    world.setContainerItem(pos, 0, ItemStack.EMPTY);
-    world.setContainerItem(pos, 1, ItemStack.EMPTY);
-    world.context().waitTicks(2);
-  }
-
-  private static List<Item> itemOrder(List<ItemStack> snapshot) {
-    List<Item> order = new ArrayList<>();
-    for (ItemStack stack : snapshot) {
-      if (!stack.isEmpty()) {
-        order.add(stack.getItem());
-      }
+    for (int slot = 0; slot < 3; slot++) {
+      world.setContainerItem(pos, slot, ItemStack.EMPTY);
     }
-    return order;
+    world.context().waitTicks(2);
   }
 
   private static void setSortMode(ClientTestContext context, SortMode mode) {
