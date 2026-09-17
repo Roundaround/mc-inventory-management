@@ -1,5 +1,6 @@
 package me.roundaround.inventorymanagement.mixin;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import me.roundaround.allay.api.MixinEnv;
 import me.roundaround.inventorymanagement.client.InventoryManagementKeyMappings;
 import me.roundaround.inventorymanagement.config.InventoryManagementConfig;
@@ -66,7 +67,7 @@ public abstract class SlotLockMixin {
     if (!Minecraft.getInstance().hasControlDown()) {
       return;
     }
-    if (event.button() != 0 && event.button() != 1) {
+    if (event.button() != InputConstants.MOUSE_BUTTON_LEFT && event.button() != InputConstants.MOUSE_BUTTON_RIGHT) {
       return;
     }
 
