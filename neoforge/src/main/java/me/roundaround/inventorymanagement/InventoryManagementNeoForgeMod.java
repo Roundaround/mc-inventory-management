@@ -21,11 +21,9 @@ public final class InventoryManagementNeoForgeMod {
         GroupBootstrap.init();
         Networking.register();
 
-        NeoForge.EVENT_BUS.addListener(TagsUpdatedEvent.class, event -> {
-            if (event.getUpdateCause() == TagsUpdatedEvent.UpdateCause.CLIENT_PACKET_RECEIVED) {
-                DynamicTagGroups.rebuild(event.getLookupProvider());
-            }
-        });
+        NeoForge.EVENT_BUS.addListener(
+                TagsUpdatedEvent.ClientPacketReceived.class,
+                event -> DynamicTagGroups.rebuild(event.getRegistries()));
 
         if (FMLEnvironment.getDist().isClient()) {
             NeoForgeClient.init(modBus, container);
