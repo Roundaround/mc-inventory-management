@@ -1,0 +1,26 @@
+{
+  "inventorymanagement.config.title": "インベントリ管理設定",
+
+  "inventorymanagement.button.sort_player": "整列",
+  "inventorymanagement.button.sort_container": "整列",
+  "inventorymanagement.button.autostack_into": "スタック単位で格納",
+  "inventorymanagement.button.autostack_from": "スタック単位で取得",
+  "inventorymanagement.button.transfer_place": "すべて格納",
+  "inventorymanagement.button.transfer_take": "すべて取得",
+
+  "inventorymanagement.keybind.category": "インベントリ管理",
+  "inventorymanagement.keybind.position_edit.player": "プレイヤー側のボタンを配置する",
+  "inventorymanagement.keybind.position_edit.container": "倉庫側のボタンを配置する",
+
+  "inventorymanagement.position_edit.title": "ボタンの配置",
+  "inventorymanagement.default_position_edit.title": "既定のボタン配置を設定する",
+  "inventorymanagement.default_position.label": "既定のボタン配置",
+
+  "inventorymanagement.mod_enabled.label": "Modが有効",
+
+  "inventorymanagement.show_sort.label": "整列ボタンを表示する",
+  "inventorymanagement.show_stack.label": "スタック単位ボタンを表示する",
+  "inventorymanagement.show_transfer.label": "移動ボタンを表示する",
+
+  "inventorymanagement.gui_theme.label": "GUIの色調"
+}
